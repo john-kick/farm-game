@@ -112,7 +112,6 @@ namespace FarmGame.Tiles
 			Neighbor<Tile>[] neighbors
 		)
 		{
-			GD.Print($"[SELF] Position: {GridPosition}, Type: {GetTileType()}");
 			foreach (Neighbor<Tile> neighbor in neighbors)
 			{
                 if (neighbor.Element == null)
@@ -126,8 +125,6 @@ namespace FarmGame.Tiles
 
                 int ox = neighbor.Offset.X;
                 int oz = neighbor.Offset.Y;
-
-				GD.Print($"[NEIGHBOR] Position: {neighbor.Element.GridPosition}, Type: {neighbor.Element.GetTileType()}, Offset: {neighbor.Offset}, ox: {ox}, oz: {oz}");
 
                 Vector3 v0, v1, v2, v3;
 
