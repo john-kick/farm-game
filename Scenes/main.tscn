@@ -1,16 +1,19 @@
 [gd_scene format=3 uid="uid://bulwtqswo6m1w"]
 
 [ext_resource type="Script" uid="uid://cfbvndqjs70pi" path="res://Scripts/Main.cs" id="1_bo1nx"]
-[ext_resource type="PackedScene" path="res://scenes/camera_3d.tscn" id="2_8gbba"]
+[ext_resource type="PackedScene" uid="uid://cggldt6wqglsw" path="res://Scenes/player.tscn" id="2_bo1nx"]
 
 [node name="Main" type="Node3D" unique_id=1547825884]
 script = ExtResource("1_bo1nx")
 Size = Vector2i(20, 20)
 
-[node name="Camera3D" parent="." unique_id=317636667 instance=ExtResource("2_8gbba")]
-transform = Transform3D(-0.7071068, 0.4055798, -0.579228, 0, 0.81915206, 0.57357645, 0.7071068, 0.4055798, -0.579228, -1.6567641, 2, -1.6069875)
-
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=326226750]
 transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 10, 0)
 
 [node name="Tiles" type="Node3D" parent="." unique_id=1000130427]
+
+[node name="Player" parent="." unique_id=173540491 instance=ExtResource("2_bo1nx")]
+transform = Transform3D(-0.70710677, 0, -0.70710677, 0, 1, 0, 0.70710677, 0, -0.70710677, 0, 5.0989447, 0)
+MovementSpeed = 5.0
+Acceleration = 0.6
+StopThreshold = 0.005
