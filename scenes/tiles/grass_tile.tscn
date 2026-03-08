@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://dldfxyccq14wy"]
+
+[ext_resource type="Script" uid="uid://derjr0qi2j768" path="res://Scripts/Tiles/GrassTile.cs" id="1_6u8su"]
+
+[node name="GrassTile" type="MeshInstance3D" unique_id=18772106]
+script = ExtResource("1_6u8su")

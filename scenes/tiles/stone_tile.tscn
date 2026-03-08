@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://bmy3ewsh5o8hw"]
+
+[ext_resource type="Script" uid="uid://jvj8eqkmfdpy" path="res://Scripts/Tiles/StoneTile.cs" id="1_wxisn"]
+
+[node name="StoneTile" type="MeshInstance3D" unique_id=436288882]
+script = ExtResource("1_wxisn")

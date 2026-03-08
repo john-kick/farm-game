@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://bkalso12m4h3p"]
+
+[ext_resource type="Script" uid="uid://dgmytvrqidmbi" path="res://Scripts/Tiles/DirtTile.cs" id="1_8plsb"]
+
+[node name="DirtTile" type="MeshInstance3D" unique_id=1272188267]
+script = ExtResource("1_8plsb")
