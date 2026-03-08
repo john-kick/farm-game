@@ -1,13 +1,13 @@
 [gd_scene format=3 uid="uid://bulwtqswo6m1w"]
 
-[ext_resource type="Script" uid="uid://cfbvndqjs70pi" path="res://Scripts/Main.cs" id="1_0wfyh"]
-[ext_resource type="PackedScene" uid="uid://dy7hap4tg3nn8" path="res://scenes/camera_3d.tscn" id="2_0wfyh"]
+[ext_resource type="Script" uid="uid://cfbvndqjs70pi" path="res://Scripts/Main.cs" id="1_bo1nx"]
+[ext_resource type="PackedScene" path="res://scenes/camera_3d.tscn" id="2_8gbba"]
 
 [node name="Main" type="Node3D" unique_id=1547825884]
-script = ExtResource("1_0wfyh")
+script = ExtResource("1_bo1nx")
 Size = Vector2i(20, 20)
 
-[node name="Camera3D" parent="." unique_id=317636667 instance=ExtResource("2_0wfyh")]
+[node name="Camera3D" parent="." unique_id=317636667 instance=ExtResource("2_8gbba")]
 transform = Transform3D(-0.7071068, 0.4055798, -0.579228, 0, 0.81915206, 0.57357645, 0.7071068, 0.4055798, -0.579228, -1.6567641, 2, -1.6069875)
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=326226750]
