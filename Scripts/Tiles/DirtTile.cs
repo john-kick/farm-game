@@ -14,7 +14,7 @@ namespace FarmGame.Tiles
 
         public static new PackedScene GetScene()
         {
-            return GD.Load<PackedScene>("res://scenes/tiles/dirt_tile.tscn");
+            return GD.Load<PackedScene>("res://Scenes/Tiles/dirt_tile.tscn");
         }
 
         protected override float GetHeight()
