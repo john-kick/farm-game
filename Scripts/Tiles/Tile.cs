@@ -1,12 +1,16 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using Godot;
 
 namespace FarmGame.Tiles
 {
-	public abstract partial class Tile : MeshInstance3D
+	public abstract partial class Tile : StaticBody3D
 	{
-		public Vector2I GridPosition;
+		[Export] public Vector2I GridPosition;
+
+		protected MeshInstance3D meshInstance;
+		protected CollisionShape3D collisionShape;
 
 		public Tile()
 		{ }
@@ -18,11 +22,18 @@ namespace FarmGame.Tiles
 
 		public override void _Ready()
 		{
-			ApplyMaterial();
+		}
+
+		private void ApplyMaterial()
+		{
+			meshInstance.MaterialOverride = GetMaterial();
 		}
 
 		public void Render(Neighbor<Tile>[] neighbors, Mesh.PrimitiveType primitiveType = Mesh.PrimitiveType.Triangles)
 		{
+			meshInstance = GetNode<MeshInstance3D>("Mesh");
+			collisionShape = GetNode<CollisionShape3D>("CollisionShape");
+
 			ArrayMesh mesh = new();
 
 			List<Vector3> vertices = [];
@@ -41,47 +52,44 @@ namespace FarmGame.Tiles
 			arrays[(int)Mesh.ArrayType.Index] = indices.ToArray();
 
 			mesh.AddSurfaceFromArrays(primitiveType, arrays);
-			Mesh = mesh;
+			meshInstance.Mesh = mesh;
+			GenerateCollisionShape();
+			ApplyMaterial();
 		}
 
-		private void ApplyMaterial()
-		{
-			MaterialOverride = GetMaterial();
-		}
+		// private static void AddQuad(
+		// 	List<Vector3> vertices,
+		// 	List<Vector3> normals,
+		// 	List<Vector2> uvs,
+		// 	List<int> indices,
+		// 	Vector3 v0, Vector3 v1, Vector3 v2, Vector3 v3
+		// )
+		// {
+		// 	int start = vertices.Count;
 
-		private static void AddQuad(
-			List<Vector3> vertices,
-			List<Vector3> normals,
-			List<Vector2> uvs,
-			List<int> indices,
-			Vector3 v0, Vector3 v1, Vector3 v2, Vector3 v3
-		)
-		{
-			int start = vertices.Count;
+		// 	vertices.Add(v0);
+		// 	vertices.Add(v1);
+		// 	vertices.Add(v2);
+		// 	vertices.Add(v3);
 
-			vertices.Add(v0);
-			vertices.Add(v1);
-			vertices.Add(v2);
-			vertices.Add(v3);
+		// 	normals.Add(Vector3.Up);
+		// 	normals.Add(Vector3.Up);
+		// 	normals.Add(Vector3.Up);
+		// 	normals.Add(Vector3.Up);
 
-			normals.Add(Vector3.Up);
-			normals.Add(Vector3.Up);
-			normals.Add(Vector3.Up);
-			normals.Add(Vector3.Up);
+		// 	uvs.Add(Vector2.Zero);
+		// 	uvs.Add(Vector2.Zero);
+		// 	uvs.Add(Vector2.Zero);
+		// 	uvs.Add(Vector2.Zero);
 
-			uvs.Add(Vector2.Zero);
-			uvs.Add(Vector2.Zero);
-			uvs.Add(Vector2.Zero);
-			uvs.Add(Vector2.Zero);
+		// 	indices.Add(start + 0);
+		// 	indices.Add(start + 3);
+		// 	indices.Add(start + 1);
 
-			indices.Add(start + 0);
-			indices.Add(start + 3);
-			indices.Add(start + 1);
-
-			indices.Add(start + 0);
-			indices.Add(start + 2);
-			indices.Add(start + 3);
-		}
+		// 	indices.Add(start + 0);
+		// 	indices.Add(start + 2);
+		// 	indices.Add(start + 3);
+		// }
 
 		private void AddTopQuad(
 			List<Vector3> vertices,
@@ -92,13 +100,30 @@ namespace FarmGame.Tiles
 		{
 			float height = GetHeight();
 
-			AddQuad(
-				vertices, normals, uvs, indices,
-				new Vector3(0 + GridPosition.X, height, 0 + GridPosition.Y),
-				new Vector3(0 + GridPosition.X, height, 1 + GridPosition.Y),
-				new Vector3(1 + GridPosition.X, height, 0 + GridPosition.Y),
-				new Vector3(1 + GridPosition.X, height, 1 + GridPosition.Y)
-			);
+			int start = vertices.Count;
+			
+			vertices.Add(new Vector3(0 + GridPosition.X, height, 0 + GridPosition.Y));
+			vertices.Add(new Vector3(0 + GridPosition.X, height, 1 + GridPosition.Y));
+			vertices.Add(new Vector3(1 + GridPosition.X, height, 0 + GridPosition.Y));
+			vertices.Add(new Vector3(1 + GridPosition.X, height, 1 + GridPosition.Y));
+
+			normals.Add(Vector3.Up);			
+			normals.Add(Vector3.Up);			
+			normals.Add(Vector3.Up);			
+			normals.Add(Vector3.Up);
+
+			uvs.Add(Vector2.Zero);			
+			uvs.Add(Vector2.Zero);			
+			uvs.Add(Vector2.Zero);			
+			uvs.Add(Vector2.Zero);
+
+			indices.Add(start + 0);
+			indices.Add(start + 3);
+			indices.Add(start + 1);
+
+			indices.Add(start + 0);
+			indices.Add(start + 2);
+			indices.Add(start + 3);
 		}
 
 		/// <summary>
@@ -114,51 +139,88 @@ namespace FarmGame.Tiles
 		{
 			foreach (Neighbor<Tile> neighbor in neighbors)
 			{
-                if (neighbor.Element == null)
-                    continue;
+				if (neighbor.Element == null)
+					continue;
 
-                float h = GetHeight();
-                float nh = neighbor.Element.GetHeight();
+				float h = GetHeight();
+				float nh = neighbor.Element.GetHeight();
 
-                if (h <= nh)
-                    continue;
+				if (h <= nh)
+					continue;
 
-                int ox = neighbor.Offset.X;
-                int oz = neighbor.Offset.Y;
+				int ox = neighbor.Offset.X;
+				int oz = neighbor.Offset.Y;
 
-                Vector3 v0, v1, v2, v3;
+				Vector3 v0, v1, v2, v3, normal;
 
-                if (ox == 1) // right
-                {
-                    v0 = new Vector3(GridPosition.X + 1, h, GridPosition.Y);
-                    v1 = new Vector3(GridPosition.X + 1, h, GridPosition.Y + 1);
-                    v2 = new Vector3(GridPosition.X + 1, nh, GridPosition.Y);
-                    v3 = new Vector3(GridPosition.X + 1, nh, GridPosition.Y + 1);
-                }
-                else if (ox == -1) // left
-                {
-                    v0 = new Vector3(GridPosition.X, h, GridPosition.Y + 1);
-                    v1 = new Vector3(GridPosition.X, h, GridPosition.Y);
-                    v2 = new Vector3(GridPosition.X, nh, GridPosition.Y + 1);
-                    v3 = new Vector3(GridPosition.X, nh, GridPosition.Y);
-                }
-                else if (oz == 1) // bottom
-                {
-                    v0 = new Vector3(GridPosition.X + 1, h, GridPosition.Y + 1);
-                    v1 = new Vector3(GridPosition.X, h, GridPosition.Y + 1);
-                    v2 = new Vector3(GridPosition.X + 1, nh, GridPosition.Y + 1);
-                    v3 = new Vector3(GridPosition.X, nh, GridPosition.Y + 1);
-                }
-                else // top (oz == -1)
-                {
-                    v0 = new Vector3(GridPosition.X, h, GridPosition.Y);
-                    v1 = new Vector3(GridPosition.X + 1, h, GridPosition.Y);
-                    v2 = new Vector3(GridPosition.X, nh, GridPosition.Y);
-                    v3 = new Vector3(GridPosition.X + 1, nh, GridPosition.Y);
-                }
+				if (ox == 1) // right
+				{
+					v0 = new Vector3(GridPosition.X + 1, h, GridPosition.Y);
+					v1 = new Vector3(GridPosition.X + 1, h, GridPosition.Y + 1);
+					v2 = new Vector3(GridPosition.X + 1, nh, GridPosition.Y);
+					v3 = new Vector3(GridPosition.X + 1, nh, GridPosition.Y + 1);
+					normal = new Vector3(1, 0, 0);
+				}
+				else if (ox == -1) // left
+				{
+					v0 = new Vector3(GridPosition.X, h, GridPosition.Y + 1);
+					v1 = new Vector3(GridPosition.X, h, GridPosition.Y);
+					v2 = new Vector3(GridPosition.X, nh, GridPosition.Y + 1);
+					v3 = new Vector3(GridPosition.X, nh, GridPosition.Y);
+					normal = new Vector3(-1, 0, 0);
+				}
+				else if (oz == 1) // bottom
+				{
+					v0 = new Vector3(GridPosition.X + 1, h, GridPosition.Y + 1);
+					v1 = new Vector3(GridPosition.X, h, GridPosition.Y + 1);
+					v2 = new Vector3(GridPosition.X + 1, nh, GridPosition.Y + 1);
+					v3 = new Vector3(GridPosition.X, nh, GridPosition.Y + 1);
+					normal = new Vector3(0, 0, 1);
+				}
+				else // top (oz == -1)
+				{
+					v0 = new Vector3(GridPosition.X, h, GridPosition.Y);
+					v1 = new Vector3(GridPosition.X + 1, h, GridPosition.Y);
+					v2 = new Vector3(GridPosition.X, nh, GridPosition.Y);
+					v3 = new Vector3(GridPosition.X + 1, nh, GridPosition.Y);
+					normal = new Vector3(0, 0, -1);
+				}
 
-                AddQuad(vertices, normals, uvs, indices, v0, v1, v2, v3);
+				int start = vertices.Count;
+
+				vertices.Add(v0);
+				vertices.Add(v1);
+				vertices.Add(v2);
+				vertices.Add(v3);
+
+				normals.Add(normal);
+				normals.Add(normal);
+				normals.Add(normal);
+				normals.Add(normal);
+
+				uvs.Add(Vector2.Zero);
+				uvs.Add(Vector2.Zero);
+				uvs.Add(Vector2.Zero);
+				uvs.Add(Vector2.Zero);
+
+				indices.Add(start + 0);
+				indices.Add(start + 3);
+				indices.Add(start + 1);
+
+				indices.Add(start + 0);
+				indices.Add(start + 2);
+				indices.Add(start + 3);
 			}
+		}
+
+		private void GenerateCollisionShape()
+		{
+			var collision = new CollisionShape3D
+			{
+				Shape = meshInstance.Mesh.CreateTrimeshShape()
+			};
+
+			AddChild(collision);
 		}
 
 		public static PackedScene GetScene()

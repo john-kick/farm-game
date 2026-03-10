@@ -20,6 +20,8 @@ public partial class Main : Node3D
 		GenerateRandomField();
 		// GenerateTestField();
 		RenderField();
+		// GrassTile grassTile = GetNode<GrassTile>("Tiles/GrassTile");
+		// grassTile.Render([]);
 	}
 
 	/// <summary>
@@ -91,6 +93,18 @@ public partial class Main : Node3D
 
 				tile.Render(neighbors, PrimitiveType);
 				Field.AddChild(tile);
+			}
+		}
+	}
+
+	private void GenerateCollisionBody()
+	{
+		for (int z = 0; z < Size.Y; z++)
+		{
+			for (int x = 0; x < Size.X; x++)
+			{
+				StaticBody3D staticBody = new();
+				CollisionShape3D collisionShape3D = new();
 			}
 		}
 	}

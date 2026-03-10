@@ -5,22 +5,21 @@ namespace FarmGame.Scripts.Player
 	public partial class Player : CharacterBody3D
 	{
 		[Export] public float Speed = 1.0f;
+		[Export] public float FastMultiplier = 2.0f;
+		[Export] public float JumpStrength = 10.0f;
 		[Export] public float MouseSensitivity = .15f;
-		[Export] public float MovementSpeed = 1.0f;
-		[Export] public float Acceleration = .2f;
-		[Export] public float Damping = .1f;
-		[Export] public float StopThreshold = .0005f;
-		[Export] public float FastMultiplier = 2f;
-		[Export] public float Gravity = .981f;
+		[Export] public float Gravity = 0.3f;
+		[Export] public float DoubleTapTime = 0.2f;
 
-		private Vector3 velocity;
+		private float jumpLastPressed = 0.0f;
+		private Vector3 targetVelocity;
 		private Camera3D camera;
 
-        public override void _Ready()
-        {
+		public override void _Ready()
+		{
 			Input.MouseMode = Input.MouseModeEnum.Captured;
 			camera = GetNode<Camera3D>("Camera");
-        }
+		}
 
 		public override void _Input(InputEvent @event)
 		{
@@ -42,66 +41,59 @@ namespace FarmGame.Scripts.Player
 			}
 		}
 
-		public override void _Process(double delta)
+		public override void _PhysicsProcess(double delta)
 		{
 			ApplyMovementInput(delta);
-			// ApplyGravity(delta);
-			UpdatePosition();
+			ApplyGravity(delta);
+			Move();
 		}
 
 		private void ApplyMovementInput(double delta)
 		{
-			float maxSpeed = MovementSpeed;
+			float speed = Speed;
 
 			if (Input.IsActionPressed("ui_shift"))
-				maxSpeed *= FastMultiplier;
+				speed *= FastMultiplier;
 
 			Vector3 direction = Vector3.Zero;
-
 			if (Input.IsActionPressed("ui_up")) direction -= Transform.Basis.Z;
 			if (Input.IsActionPressed("ui_down")) direction += Transform.Basis.Z;
 			if (Input.IsActionPressed("ui_left")) direction -= Transform.Basis.X;
 			if (Input.IsActionPressed("ui_right")) direction += Transform.Basis.X;
 
- 			// Prevent vertical movement
-    		direction.Y = 0;
-
 			if (direction != Vector3.Zero)
 			{
+				direction.Y = 0;
 				direction = direction.Normalized();
-				velocity += direction * Acceleration * (float)delta;
-				Vector2 horizontal_velocity = new(velocity.X, velocity.Z);
-				float horizontal_speed = horizontal_velocity.Length();
-
-				if (horizontal_speed > maxSpeed)
-					horizontal_velocity = horizontal_velocity.Normalized() * maxSpeed;
-
-				velocity.X = horizontal_velocity.X;
-				velocity.Z = horizontal_velocity.Y;
 			}
-			else
-			{
-				// Dampen the movement when no input is made
-				float dampingFactor = Mathf.Pow(Damping, (float)delta); // halves speed every second
-				velocity.X *= dampingFactor;
-				velocity.Z *= dampingFactor;
 
-				if (new Vector2(velocity.X, velocity.Z).Length() < StopThreshold)
+			targetVelocity.X = direction.X * speed;
+			targetVelocity.Z = direction.Z * speed;
+
+			if (Input.IsActionJustPressed("ui_jump"))
+			{
+				if (IsOnFloor())
 				{
-					velocity.X = 0;
-					velocity.Z = 0;
+					Jump();
 				}
 			}
+
+			Velocity = targetVelocity;
+		}
+
+		private void Jump()
+		{
+			targetVelocity.Y = JumpStrength;
 		}
 
 		private void ApplyGravity(double delta)
 		{
-			velocity -= new Vector3(0, Gravity * (float)delta, 0);
+			if (!IsOnFloor()) targetVelocity.Y -= Gravity * (float)delta;
 		}
-		
-		private void UpdatePosition()
+
+		private void Move()
 		{
-			Position += velocity;
+			MoveAndSlide();
 		}
 	}
 }

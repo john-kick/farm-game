@@ -19,7 +19,7 @@ namespace FarmGame.Tiles
 
         protected override float GetHeight()
         {
-            return 0.7f;
+            return 0.9f;
         }
 
         public override TileType GetTileType()
