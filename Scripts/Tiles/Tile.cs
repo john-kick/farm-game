@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Threading;
 using Godot;
 
 namespace FarmGame.Tiles
@@ -19,6 +18,10 @@ namespace FarmGame.Tiles
 		{
 			GridPosition = gridPosition;
 		}
+
+        public override void _EnterTree()
+        {
+        }
 
 		public override void _Ready()
 		{
@@ -56,40 +59,6 @@ namespace FarmGame.Tiles
 			GenerateCollisionShape();
 			ApplyMaterial();
 		}
-
-		// private static void AddQuad(
-		// 	List<Vector3> vertices,
-		// 	List<Vector3> normals,
-		// 	List<Vector2> uvs,
-		// 	List<int> indices,
-		// 	Vector3 v0, Vector3 v1, Vector3 v2, Vector3 v3
-		// )
-		// {
-		// 	int start = vertices.Count;
-
-		// 	vertices.Add(v0);
-		// 	vertices.Add(v1);
-		// 	vertices.Add(v2);
-		// 	vertices.Add(v3);
-
-		// 	normals.Add(Vector3.Up);
-		// 	normals.Add(Vector3.Up);
-		// 	normals.Add(Vector3.Up);
-		// 	normals.Add(Vector3.Up);
-
-		// 	uvs.Add(Vector2.Zero);
-		// 	uvs.Add(Vector2.Zero);
-		// 	uvs.Add(Vector2.Zero);
-		// 	uvs.Add(Vector2.Zero);
-
-		// 	indices.Add(start + 0);
-		// 	indices.Add(start + 3);
-		// 	indices.Add(start + 1);
-
-		// 	indices.Add(start + 0);
-		// 	indices.Add(start + 2);
-		// 	indices.Add(start + 3);
-		// }
 
 		private void AddTopQuad(
 			List<Vector3> vertices,
@@ -137,6 +106,7 @@ namespace FarmGame.Tiles
 			Neighbor<Tile>[] neighbors
 		)
 		{
+
 			foreach (Neighbor<Tile> neighbor in neighbors)
 			{
 				if (neighbor.Element == null)
@@ -226,6 +196,11 @@ namespace FarmGame.Tiles
 		public static PackedScene GetScene()
 		{
 			throw new Exception("Called from base class");
+		}
+
+		public virtual void HandleClick()
+		{
+			// Do nothing
 		}
 
 		protected virtual float GetHeight()

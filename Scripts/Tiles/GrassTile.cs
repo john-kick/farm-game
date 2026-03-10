@@ -17,6 +17,11 @@ namespace FarmGame.Tiles
 			return GD.Load<PackedScene>("res://Scenes/Tiles/grass_tile.tscn");
 		}
 
+        public override void HandleClick()
+        {
+            
+        }
+
 		public override TileType GetTileType()
 		{
 			return TileType.GRASS;

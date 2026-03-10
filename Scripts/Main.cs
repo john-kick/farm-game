@@ -1,5 +1,6 @@
 using Godot;
 using FarmGame.Tiles;
+using Godot.Collections;
 
 public partial class Main : Node3D
 {
@@ -7,21 +8,46 @@ public partial class Main : Node3D
 	[Export] public Node3D Field;
 	[Export] public Mesh.PrimitiveType PrimitiveType = Mesh.PrimitiveType.Triangles;
 
-	private Tile[] Tiles;
+	private Tile[] tiles;
+	private Camera3D camera;
 
 	public override void _Ready()
 	{
+		camera = GetNode<Camera3D>("Player/Camera");
+
 		if (Field == null)
 		{
 			Field = new Node3D();
 			AddChild(Field);
 		}
 
-		GenerateRandomField();
+		// GenerateRandomField();
+		GenerateUniformField(TileType.GRASS);
 		// GenerateTestField();
-		RenderField();
+		InitRender();
 		// GrassTile grassTile = GetNode<GrassTile>("Tiles/GrassTile");
 		// grassTile.Render([]);
+	}
+
+	public override void _Process(double delta)
+	{
+		CheckInput();
+	}
+
+	public override void _PhysicsProcess(double delta)
+	{
+	}
+
+	public void CheckInput()
+	{
+		if (Input.IsActionJustPressed("ui_primary_action"))
+		{
+			Dictionary collisions = CheckCollision();
+			if (collisions.Count > 0)
+			{
+				HandleCollision(collisions);
+			}
+		}
 	}
 
 	/// <summary>
@@ -29,7 +55,7 @@ public partial class Main : Node3D
 	/// </summary>
 	private void GenerateRandomField()
 	{
-		Tiles = new Tile[Size.X * Size.Y];
+		tiles = new Tile[Size.X * Size.Y];
 
 		for (int z = 0; z < Size.Y; z++)
 		{
@@ -37,7 +63,22 @@ public partial class Main : Node3D
 			{
 				Tile tile = TileFactory.GetRandomTile();
 				tile.GridPosition = new Vector2I(x, z);
-				Tiles[z * Size.X + x] = tile;
+				tiles[z * Size.X + x] = tile;
+			}
+		}
+	}
+
+	private void GenerateUniformField(TileType type)
+	{
+		tiles = new Tile[Size.X * Size.Y];
+
+		for (int z = 0; z < Size.Y; z++)
+		{
+			for (int x = 0; x < Size.X; x++)
+			{
+				Tile tile = TileFactory.GetTile(type);
+				tile.GridPosition = new Vector2I(x, z);
+				tiles[z * Size.X + x] = tile;
 			}
 		}
 	}
@@ -45,7 +86,7 @@ public partial class Main : Node3D
 	private void GenerateTestField()
 	{
 		Size = new Vector2I(2, 2);
-		Tiles = [
+		tiles = [
 			new StoneTile() {GridPosition = new Vector2I(0,0)}, // top-left
 			new DirtTile()  {GridPosition = new Vector2I(1,0)}, // top-right
 			new DirtTile()  {GridPosition = new Vector2I(0,1)}, // bottom-left
@@ -56,64 +97,112 @@ public partial class Main : Node3D
 	/// <summary>
 	/// Adds the tiles contained in the `Tiles` array to the Scene
 	/// </summary>
-	private void RenderField()
+	private void InitRender()
 	{
 		for (int z = 0; z < Size.Y; z++)
 		{
 			for (int x = 0; x < Size.X; x++)
 			{
 				Tile tile = GetTile(x, z);
-
-				Neighbor<Tile>[] neighbors = [
-					new Neighbor<Tile>()
-					{
-						// Right
-						Element = GetTile(x + 1, z),
-						Offset = new Vector2I(1, 0)
-					},
-					new Neighbor<Tile>()
-					{
-						// Left
-						Element = GetTile(x - 1, z),
-						Offset = new Vector2I(-1, 0)
-					},
-					new Neighbor<Tile>()
-					{
-						// Top
-						Element = GetTile(x, z - 1),
-						Offset = new Vector2I(0, -1)
-					},
-					new Neighbor<Tile>()
-					{
-						// Bottom
-						Element = GetTile(x,z + 1),
-						Offset = new Vector2I(0, 1)
-					}
-				];
-
-				tile.Render(neighbors, PrimitiveType);
+				Neighbor<Tile>[] neighbors = GetNeighbors(tile);
 				Field.AddChild(tile);
+				tile.Render(neighbors, PrimitiveType);
 			}
 		}
 	}
 
-	private void GenerateCollisionBody()
+	private void ReplaceTile(Tile oldTile, TileType newType)
 	{
-		for (int z = 0; z < Size.Y; z++)
+		Vector2I gridPosition = oldTile.GridPosition;
+
+		// Generate the new tile
+		Tile newTile = TileFactory.GetTile(newType);
+		newTile.GridPosition = gridPosition;
+
+		// Add the new tile to the tiles list
+		tiles[gridPosition.Y * Size.X + gridPosition.X] = newTile;
+
+		// Remove the old tile from the field
+		Field.RemoveChild(oldTile);
+		oldTile.QueueFree();
+
+		// Add the new tile to the field
+		Field.AddChild(newTile);
+		Neighbor<Tile>[] neighbors = GetNeighbors(newTile);
+		newTile.Render(neighbors);
+
+		// Re-render the neighbors
+		foreach (Neighbor<Tile> n in neighbors)
 		{
-			for (int x = 0; x < Size.X; x++)
-			{
-				StaticBody3D staticBody = new();
-				CollisionShape3D collisionShape3D = new();
-			}
+			n.Element.Render(GetNeighbors(n.Element));
 		}
 	}
 
 	private Tile GetTile(int x, int z)
 	{
 		if (x < 0 || z < 0 || x >= Size.X || z >= Size.Y)
-			return null;
+			return TileFactory.GetTile(TileType.BASE);
 
-		return Tiles[z * Size.X + x];
+		return tiles[z * Size.X + x];
+	}
+
+	private Dictionary CheckCollision()
+	{
+		var spaceState = GetWorld3D().DirectSpaceState;
+
+		Vector2 center = GetViewport().GetVisibleRect().Size / 2;
+
+		Vector3 from = camera.ProjectRayOrigin(center);
+		Vector3 dir = camera.ProjectRayNormal(center);
+		Vector3 to = from + dir * 1000f;
+
+		var query = PhysicsRayQueryParameters3D.Create(from, to);
+		return spaceState.IntersectRay(query);
+	}
+
+	private void HandleCollision(Dictionary collisions)
+	{
+		GodotObject collider = (GodotObject)collisions["collider"];
+
+		if (collider is Tile oldTile)
+		{
+			if (oldTile.GetTileType() == TileType.GRASS)
+			{
+				ReplaceTile(oldTile, TileType.DIRT);
+			}
+		}
+	}
+
+	private Neighbor<Tile>[] GetNeighbors(Tile tile)
+	{
+		int x = tile.GridPosition.X;
+		int z = tile.GridPosition.Y;
+
+		return [
+			new Neighbor<Tile>()
+			{
+				// Right
+				Element = GetTile(x + 1, z),
+				Offset = new Vector2I(1, 0)
+			},
+			new Neighbor<Tile>()
+			{
+				// Left
+				Element = GetTile(x - 1, z),
+				Offset = new Vector2I(-1, 0)
+			},
+			new Neighbor<Tile>()
+			{
+				// Top
+				Element = GetTile(x, z - 1),
+				Offset = new Vector2I(0, -1)
+			},
+			new Neighbor<Tile>()
+			{
+				// Bottom
+				Element = GetTile(x,z + 1),
+				Offset = new Vector2I(0, 1)
+			}
+		];
 	}
 }

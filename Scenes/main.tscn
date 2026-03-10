@@ -2,19 +2,20 @@
 
 [ext_resource type="Script" uid="uid://cfbvndqjs70pi" path="res://Scripts/Main.cs" id="1_bo1nx"]
 [ext_resource type="PackedScene" uid="uid://cggldt6wqglsw" path="res://Scenes/player.tscn" id="2_bo1nx"]
+[ext_resource type="PackedScene" uid="uid://b3141x2mtxoxf" path="res://Scenes/sun.tscn" id="3_8gbba"]
 
 [node name="Main" type="Node3D" unique_id=1547825884 node_paths=PackedStringArray("Field")]
 script = ExtResource("1_bo1nx")
 Size = Vector2i(20, 20)
 Field = NodePath("Tiles")
 
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=326226750]
-transform = Transform3D(0.6845783, -0.34966856, -0.6395971, 0.21446739, -0.7419806, 0.63519186, -0.69667524, -0.57201123, -0.43295124, 0, 10, -9.268806)
-
 [node name="Tiles" type="Node3D" parent="." unique_id=1000130427]
 
 [node name="Player" parent="." unique_id=173540491 instance=ExtResource("2_bo1nx")]
-transform = Transform3D(-0.70710677, 0, -0.70710677, 0, 1, 0, 0.70710677, 0, -0.70710677, 0, 11.942644, 0)
+transform = Transform3D(-0.70710677, 0, -0.70710677, 0, 1, 0, 0.70710677, 0, -0.70710677, 0.5, 11.943, 0.5)
 Speed = 7.57
 JumpStrength = 5.0
 Gravity = 9.81
+
+[node name="Sun" parent="." unique_id=136762208 instance=ExtResource("3_8gbba")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.094889, 6.6968155, -10.404562)

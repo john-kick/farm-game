@@ -1,0 +1,20 @@
+[gd_scene format=3 uid="uid://b3141x2mtxoxf"]
+
+[ext_resource type="Script" uid="uid://bgpiemyre1lo" path="res://Scripts/Environment/Sun.cs" id="1_02gdu"]
+
+[sub_resource type="SphereMesh" id="SphereMesh_02gdu"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_02gdu"]
+albedo_color = Color(1, 0.69803923, 0.24705882, 1)
+emission_enabled = true
+emission = Color(1, 1, 1, 1)
+emission_energy_multiplier = 6.8
+
+[node name="SunPivot" type="Node3D" unique_id=136762208]
+script = ExtResource("1_02gdu")
+
+[node name="Sun" type="DirectionalLight3D" parent="." unique_id=902953618]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Sun" unique_id=340986929]
+mesh = SubResource("SphereMesh_02gdu")
+surface_material_override/0 = SubResource("StandardMaterial3D_02gdu")

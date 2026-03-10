@@ -1,0 +1,28 @@
+[gd_scene format=3 uid="uid://bqfuss0ohtvs"]
+
+[ext_resource type="Script" uid="uid://c3u7x142lnew7" path="res://Scripts/Tests/RayTestCamera.cs" id="1_3o0gf"]
+[ext_resource type="Script" uid="uid://c625qwb3pon7h" path="res://Scripts/Tests/RayTest.cs" id="1_ihwr0"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_oslkd"]
+albedo_color = Color(0, 1, 1, 1)
+
+[sub_resource type="SphereMesh" id="SphereMesh_3o0gf"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_ihwr0"]
+
+[node name="RayTest" type="Node3D" unique_id=850093683]
+script = ExtResource("1_ihwr0")
+
+[node name="Sphere1" type="MeshInstance3D" parent="." unique_id=1180157130]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.1918192, 0, 0)
+material_override = SubResource("StandardMaterial3D_oslkd")
+mesh = SubResource("SphereMesh_3o0gf")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="Sphere1" unique_id=517643009]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Sphere1/StaticBody3D" unique_id=1788765842]
+shape = SubResource("SphereShape3D_ihwr0")
+
+[node name="Camera" type="Camera3D" parent="." unique_id=1468926401]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 0, 0, 0)
+script = ExtResource("1_3o0gf")
