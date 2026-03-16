@@ -198,7 +198,7 @@ namespace FarmGame.Scripts.Tiles
 			// Do nothing
 		}
 
-		protected virtual float GetHeight()
+		public virtual float GetHeight()
 		{
 			return 1;
 		}

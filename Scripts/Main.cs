@@ -1,4 +1,5 @@
 using Godot;
+using FarmGame.Scripts.UI;
 using Godot.Collections;
 using FarmGame.Scripts.Tiles;
 
@@ -13,9 +14,12 @@ namespace FarmGame.Scripts
 		private Tile[] tiles;
 		private Camera3D camera;
 
+		private TileIndicator tileIndicator;
+
 		public override void _Ready()
 		{
 			camera = GetNode<Camera3D>("Player/Camera");
+			tileIndicator = (TileIndicator)GetNode<Node3D>("TileIndicator");
 
 			if (Field == null)
 			{
@@ -33,23 +37,11 @@ namespace FarmGame.Scripts
 
 		public override void _Process(double delta)
 		{
-			CheckInput();
+			CheckCollision();
 		}
 
 		public override void _PhysicsProcess(double delta)
 		{
-		}
-
-		public void CheckInput()
-		{
-			if (Input.IsActionJustPressed("ui_primary_action"))
-			{
-				Dictionary collisions = CheckCollision();
-				if (collisions.Count > 0)
-				{
-					HandleCollision(collisions);
-				}
-			}
 		}
 
 		/// <summary>
@@ -148,7 +140,7 @@ namespace FarmGame.Scripts
 			return tiles[z * Size.X + x];
 		}
 
-		private Dictionary CheckCollision()
+		private void CheckCollision()
 		{
 			var spaceState = GetWorld3D().DirectSpaceState;
 
@@ -159,27 +151,45 @@ namespace FarmGame.Scripts
 			Vector3 to = from + dir * 1000f;
 
 			var query = PhysicsRayQueryParameters3D.Create(from, to);
-			return spaceState.IntersectRay(query);
+			Dictionary collisions = spaceState.IntersectRay(query);
+
+			if (collisions.Count > 0)
+			{
+				HandleCollision(collisions);
+			}
+			else
+			{
+				tileIndicator.FHide();
+			}
 		}
 
 		private void HandleCollision(Dictionary collisions)
 		{
 			GodotObject collider = (GodotObject)collisions["collider"];
 
-			if (collider is Tile oldTile)
+			if (collider is Tile tile)
 			{
-				if (oldTile.GetTileType() == TileType.GRASS)
+				tileIndicator.Show(tile);
+				if (Input.IsActionJustPressed("ui_primary_action"))
 				{
-					ReplaceTile(oldTile, TileType.DIRT);
+
+					if (tile.GetTileType() == TileType.GRASS)
+					{
+						ReplaceTile(tile, TileType.DIRT);
+					}
+					else if (tile.GetTileType() == TileType.DIRT)
+					{
+						ReplaceTile(tile, TileType.STONE);
+					}
+					else if (tile.GetTileType() == TileType.STONE)
+					{
+						ReplaceTile(tile, TileType.GRASS);
+					}
 				}
-				else if (oldTile.GetTileType() == TileType.DIRT)
-				{
-					ReplaceTile(oldTile, TileType.STONE);
-				}
-				else if (oldTile.GetTileType() == TileType.STONE)
-				{
-					ReplaceTile(oldTile, TileType.GRASS);
-				}
+			}
+			else
+			{
+				tileIndicator.FHide();
 			}
 		}
 

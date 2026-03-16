@@ -2,8 +2,9 @@
 
 [ext_resource type="Script" uid="uid://cfbvndqjs70pi" path="res://Scripts/Main.cs" id="1_bo1nx"]
 [ext_resource type="PackedScene" uid="uid://cggldt6wqglsw" path="res://Scenes/player.tscn" id="2_bo1nx"]
-[ext_resource type="PackedScene" uid="uid://b3141x2mtxoxf" path="res://Scenes/sun.tscn" id="3_8gbba"]
 [ext_resource type="PackedScene" uid="uid://dfjq66ecd4vuj" path="res://Scenes/debug_ui.tscn" id="4_jjvhh"]
+[ext_resource type="PackedScene" uid="uid://bexn8k7h41qik" path="res://Scenes/Tiles/tile_indicator.tscn" id="5_21xkr"]
+[ext_resource type="PackedScene" uid="uid://d06ju01naieev" path="res://Scenes/oob.tscn" id="5_kry3j"]
 
 [node name="Main" type="Node3D" unique_id=1547825884 node_paths=PackedStringArray("Field")]
 script = ExtResource("1_bo1nx")
@@ -17,8 +18,12 @@ transform = Transform3D(-0.70710677, 0, -0.70710677, 0, 1, 0, 0.70710677, 0, -0.
 MoveSpeed = 10.0
 FastMultiplier = 1.5
 
-[node name="Sun" parent="." unique_id=136762208 instance=ExtResource("3_8gbba")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.094889, 6.6968155, -10.404562)
-
 [node name="DebugUI" parent="." unique_id=1645079385 node_paths=PackedStringArray("player") instance=ExtResource("4_jjvhh")]
 player = NodePath("../Player")
+
+[node name="OOB" parent="." unique_id=1381648401 instance=ExtResource("5_kry3j")]
+
+[node name="Sun" type="DirectionalLight3D" parent="." unique_id=446433848]
+transform = Transform3D(1, 0, 0, 0, 0.7095584, 0.7046466, 0, -0.7046466, 0.7095584, 0, 51.351753, 0)
+
+[node name="TileIndicator" parent="." unique_id=12409363 instance=ExtResource("5_21xkr")]

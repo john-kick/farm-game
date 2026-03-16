@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://bexn8k7h41qik"]
+
+[ext_resource type="Script" uid="uid://by6ao5vr514ek" path="res://Scripts/UI/TileIndicator.cs" id="1_6sgsm"]
+[ext_resource type="Shader" uid="uid://cykrl2i6uubqs" path="res://Shaders/tile_indicator.gdshader" id="2_kv5kn"]
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_6sgsm"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ljtco"]
+render_priority = 0
+shader = ExtResource("2_kv5kn")
+
+[node name="TileIndicator" type="Node3D" unique_id=12409363]
+script = ExtResource("1_6sgsm")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="." unique_id=754858038]
+transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 0, 0)
+mesh = SubResource("PlaneMesh_6sgsm")
+surface_material_override/0 = SubResource("ShaderMaterial_ljtco")

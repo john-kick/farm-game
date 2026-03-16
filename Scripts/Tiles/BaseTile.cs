@@ -17,7 +17,7 @@ namespace FarmGame.Scripts.Tiles
             return GD.Load<PackedScene>("res://Scenes/Tiles/base_tile.tscn");
         }
 
-        protected override float GetHeight()
+        public override float GetHeight()
         {
             return 0;
         }
