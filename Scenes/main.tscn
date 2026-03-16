@@ -8,7 +8,7 @@
 
 [node name="Main" type="Node3D" unique_id=1547825884 node_paths=PackedStringArray("Field")]
 script = ExtResource("1_bo1nx")
-Size = Vector2i(20, 20)
+Size = Vector2i(40, 40)
 Field = NodePath("Tiles")
 
 [node name="Tiles" type="Node3D" parent="." unique_id=1000130427]
@@ -19,6 +19,7 @@ MoveSpeed = 10.0
 FastMultiplier = 1.5
 
 [node name="DebugUI" parent="." unique_id=1645079385 node_paths=PackedStringArray("player") instance=ExtResource("4_jjvhh")]
+visible = false
 player = NodePath("../Player")
 
 [node name="OOB" parent="." unique_id=1381648401 instance=ExtResource("5_kry3j")]

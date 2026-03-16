@@ -5,6 +5,19 @@
 [node name="DebugUI" type="CanvasLayer" unique_id=1645079385]
 script = ExtResource("1_k61it")
 
-[node name="PlayerPosition" type="Label" parent="." unique_id=1063295896]
-offset_right = 40.0
-offset_bottom = 23.0
+[node name="Panel" type="Panel" parent="." unique_id=1362613079]
+offset_left = 16.0
+offset_top = 19.0
+offset_right = 381.0
+offset_bottom = 295.0
+
+[node name="VFlowContainer" type="VFlowContainer" parent="Panel" unique_id=1975171443]
+layout_mode = 0
+offset_right = 364.0
+offset_bottom = 275.0
+
+[node name="PlayerPosition" type="Label" parent="Panel/VFlowContainer" unique_id=1063295896]
+layout_mode = 2
+
+[node name="FPS" type="Label" parent="Panel/VFlowContainer" unique_id=1764491433]
+layout_mode = 2

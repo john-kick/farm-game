@@ -13,13 +13,15 @@ namespace FarmGame.Scripts
 
 		private Tile[] tiles;
 		private Camera3D camera;
-
 		private TileIndicator tileIndicator;
+		private Debug debugPanel;
 
 		public override void _Ready()
 		{
+			Engine.MaxFps = 0;
 			camera = GetNode<Camera3D>("Player/Camera");
 			tileIndicator = (TileIndicator)GetNode<Node3D>("TileIndicator");
+			debugPanel = (Debug)GetNode<CanvasLayer>("DebugUI");
 
 			if (Field == null)
 			{
@@ -27,16 +29,13 @@ namespace FarmGame.Scripts
 				AddChild(Field);
 			}
 
-			// GenerateRandomField();
 			GenerateUniformField(TileType.GRASS);
-			// GenerateTestField();
 			InitRender();
-			// GrassTile grassTile = GetNode<GrassTile>("Tiles/GrassTile");
-			// grassTile.Render([]);
 		}
 
 		public override void _Process(double delta)
 		{
+			CheckInput();
 			CheckCollision();
 		}
 
@@ -140,6 +139,15 @@ namespace FarmGame.Scripts
 			return tiles[z * Size.X + x];
 		}
 
+		private void CheckInput()
+		{
+			if (Input.IsActionJustPressed("ui_debug"))
+			{
+				debugPanel.Visible = !debugPanel.Visible;
+			}
+
+		}
+
 		private void CheckCollision()
 		{
 			var spaceState = GetWorld3D().DirectSpaceState;
@@ -159,7 +167,7 @@ namespace FarmGame.Scripts
 			}
 			else
 			{
-				tileIndicator.FHide();
+				tileIndicator.Hide();
 			}
 		}
 
@@ -169,7 +177,8 @@ namespace FarmGame.Scripts
 
 			if (collider is Tile tile)
 			{
-				tileIndicator.Show(tile);			
+				tileIndicator.SetTargetTile(tile);			
+				tileIndicator.Show();			
 				if (Input.IsActionJustPressed("ui_primary_action"))
 				{
 
@@ -189,7 +198,7 @@ namespace FarmGame.Scripts
 			}
 			else
 			{
-				tileIndicator.FHide();
+				tileIndicator.Hide();
 			}
 		}
 
