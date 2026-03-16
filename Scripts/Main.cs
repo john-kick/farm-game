@@ -148,7 +148,7 @@ namespace FarmGame.Scripts
 
 			Vector3 from = camera.ProjectRayOrigin(center);
 			Vector3 dir = camera.ProjectRayNormal(center);
-			Vector3 to = from + dir * 1000f;
+			Vector3 to = from + dir * 5f;
 
 			var query = PhysicsRayQueryParameters3D.Create(from, to);
 			Dictionary collisions = spaceState.IntersectRay(query);
@@ -169,7 +169,7 @@ namespace FarmGame.Scripts
 
 			if (collider is Tile tile)
 			{
-				tileIndicator.Show(tile);
+				tileIndicator.Show(tile);			
 				if (Input.IsActionJustPressed("ui_primary_action"))
 				{
 
