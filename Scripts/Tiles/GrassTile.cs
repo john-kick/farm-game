@@ -1,6 +1,6 @@
 using Godot;
 
-namespace FarmGame.Tiles
+namespace FarmGame.Scripts.Tiles
 {
 	public partial class GrassTile : Tile
 	{

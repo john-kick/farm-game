@@ -1,15 +1,20 @@
 using Godot;
 
-public partial class CameraController : Camera3D
+public partial class PlayerController : CharacterBody3D
 {
 	[Export] public float MoveSpeed = 20f;
 	[Export] public float MouseSensitivity = 0.15f;
 	[Export] public float FastMultiplier = 3f;
+	[Export] public float Gravity = 9.8f;
+	[Export] public float JumpForce = 10f;
+
+	private Camera3D camera;
 
 	public override void _Ready()
 	{
 		Input.MouseMode = Input.MouseModeEnum.Captured;
-		Current = true;
+		camera = GetNode<Camera3D>("Camera");
+		camera.Current = true;
 	}
 
 	public override void _Input(InputEvent @event)
@@ -26,7 +31,13 @@ public partial class CameraController : Camera3D
 
 		if (@event is InputEventMouseMotion mouseMotion)
 		{
-			RotationDegrees -= new Vector3(mouseMotion.Relative.Y, mouseMotion.Relative.X, 0) * MouseSensitivity;
+			// Horizontal rotation on the parent node
+			RotationDegrees -= new Vector3(0, mouseMotion.Relative.X * MouseSensitivity, 0);
+
+			// Vertical rotation on the camera
+			float newPitch = camera.RotationDegrees.X - mouseMotion.Relative.Y * MouseSensitivity;
+			newPitch = Mathf.Clamp(newPitch, -90, 90); // Prevent flipping
+			camera.RotationDegrees = new Vector3(newPitch, camera.RotationDegrees.Y, camera.RotationDegrees.Z);
 		}
 	}
 
@@ -51,5 +62,23 @@ public partial class CameraController : Camera3D
 			direction = direction.Normalized();
 			Position += direction * speed * (float)delta;
 		}
+
+		if (!IsOnFloor())
+		{
+			Velocity += Vector3.Down * Gravity * (float)delta;
+		}
+		else
+		{
+			if (Input.IsActionJustPressed("ui_jump"))
+			{
+				Velocity = new Vector3(Velocity.X, JumpForce, Velocity.Z);
+			}
+			else
+			{
+				Velocity = new Vector3(Velocity.X, 0, Velocity.Z);
+			}
+		}
+
+		MoveAndSlide();
 	}
 }

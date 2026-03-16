@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Godot;
 
-namespace FarmGame.Tiles
+namespace FarmGame.Scripts.Tiles
 {
 	public abstract partial class Tile : StaticBody3D
 	{
@@ -25,6 +25,8 @@ namespace FarmGame.Tiles
 
 		public override void _Ready()
 		{
+			meshInstance = GetNode<MeshInstance3D>("Mesh");
+			collisionShape = GetNode<CollisionShape3D>("CollisionShape");
 		}
 
 		private void ApplyMaterial()
@@ -34,8 +36,6 @@ namespace FarmGame.Tiles
 
 		public void Render(Neighbor<Tile>[] neighbors, Mesh.PrimitiveType primitiveType = Mesh.PrimitiveType.Triangles)
 		{
-			meshInstance = GetNode<MeshInstance3D>("Mesh");
-			collisionShape = GetNode<CollisionShape3D>("CollisionShape");
 
 			ArrayMesh mesh = new();
 

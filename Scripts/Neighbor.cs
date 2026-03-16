@@ -1,6 +1,6 @@
 using Godot;
 
-namespace FarmGame.Tiles
+namespace FarmGame.Scripts
 {
 	public struct Neighbor<T>
 	{

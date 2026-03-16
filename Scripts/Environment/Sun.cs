@@ -1,6 +1,6 @@
 using Godot;
 
-namespace Scripts.Environment
+namespace FarmGame.Scripts.Environment
 {
 	public partial class Sun : Node3D
 	{

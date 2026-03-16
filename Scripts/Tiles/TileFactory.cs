@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using Godot;
 
-namespace FarmGame.Tiles
+namespace FarmGame.Scripts.Tiles
 {
 	public enum TileType
 	{
