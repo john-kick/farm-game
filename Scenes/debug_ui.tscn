@@ -1,0 +1,10 @@
+[gd_scene format=3 uid="uid://dfjq66ecd4vuj"]
+
+[ext_resource type="Script" uid="uid://csn0uu8afq0sj" path="res://Scripts/UI/Debug.cs" id="1_k61it"]
+
+[node name="DebugUI" type="CanvasLayer" unique_id=1645079385]
+script = ExtResource("1_k61it")
+
+[node name="PlayerPosition" type="Label" parent="." unique_id=1063295896]
+offset_right = 40.0
+offset_bottom = 23.0

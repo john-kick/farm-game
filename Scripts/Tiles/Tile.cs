@@ -185,12 +185,7 @@ namespace FarmGame.Tiles
 
 		private void GenerateCollisionShape()
 		{
-			var collision = new CollisionShape3D
-			{
-				Shape = meshInstance.Mesh.CreateTrimeshShape()
-			};
-
-			AddChild(collision);
+			collisionShape.Shape = meshInstance.Mesh.CreateTrimeshShape();
 		}
 
 		public static PackedScene GetScene()
