@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://dgmytvrqidmbi" path="res://Scripts/Tiles/DirtTile.cs" id="1_8plsb"]
 
-[node name="DirtTile" type="StaticBody3D" unique_id=1094419001]
+[node name="EdgeTile" type="StaticBody3D" unique_id=1094419001]
 script = ExtResource("1_8plsb")
 
 [node name="Mesh" type="MeshInstance3D" parent="." unique_id=1625482326]

@@ -19,10 +19,6 @@ namespace FarmGame.Scripts.Tiles
 			GridPosition = gridPosition;
 		}
 
-        public override void _EnterTree()
-        {
-        }
-
 		public override void _Ready()
 		{
 			meshInstance = GetNode<MeshInstance3D>("Mesh");
@@ -34,9 +30,10 @@ namespace FarmGame.Scripts.Tiles
 			meshInstance.MaterialOverride = GetMaterial();
 		}
 
-		public void Render(Neighbor<Tile>[] neighbors, Mesh.PrimitiveType primitiveType = Mesh.PrimitiveType.Triangles)
-		{
-
+		public void Render(
+			Neighbor<Tile>[] neighbors,
+			Mesh.PrimitiveType primitiveType = Mesh.PrimitiveType.Triangles
+		) {
 			ArrayMesh mesh = new();
 
 			List<Vector3> vertices = [];

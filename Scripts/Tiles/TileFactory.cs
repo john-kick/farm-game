@@ -9,6 +9,7 @@ namespace FarmGame.Scripts.Tiles
 		GRASS,
 		STONE,
 		DIRT,
+		EDGE,
 		BASE
 	}
 
@@ -22,6 +23,7 @@ namespace FarmGame.Scripts.Tiles
 				TileType.STONE => StoneTile.GetScene(),
 				TileType.DIRT => DirtTile.GetScene(),
 				TileType.BASE => BaseTile.GetScene(),
+				TileType.EDGE => EdgeTile.GetScene(),
 				_ => throw new Exception($"Unknown tile type '{type}'"),
 			};
 			Tile tile = scene.Instantiate<Tile>();
