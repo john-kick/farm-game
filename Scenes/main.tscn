@@ -26,3 +26,4 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 39.76944, 0, 36.920753)
 transform = Transform3D(1, 0, 0, 0, 0.7095584, 0.7046466, 0, -0.7046466, 0.7095584, 0, 51.351753, 0)
 
 [node name="TileIndicator" parent="." unique_id=12409363 instance=ExtResource("5_21xkr")]
+LerpStrength = 0.014

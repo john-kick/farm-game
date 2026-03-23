@@ -6,6 +6,8 @@ namespace FarmGame.Scripts.UI
 
     public partial class TileIndicator : Node3D
     {
+        [Export(PropertyHint.Range, "0, 0.1, 0.01")]
+        public float LerpStrength = 0.01f;
         private Vector3 targetPosition;
 
         public override void _Ready()
@@ -15,7 +17,7 @@ namespace FarmGame.Scripts.UI
 
         public override void _Process(double delta)
         {
-            GlobalPosition = GlobalPosition.Lerp(targetPosition, 0.3f);
+            GlobalPosition = GlobalPosition.Lerp(targetPosition, LerpStrength);
         }
 
         public void SetTargetTile(Tile tile)
