@@ -26,6 +26,29 @@ namespace FarmGame.Scripts.Tiles
 		public void InitializeField()
 		{
 			ClearField();
+
+			// CreateRandomField();			
+			CreateUniformField(TileType.Grass);
+
+			RenderTiles();
+			BuildTerrainCollision();
+		}
+
+		private void CreateUniformField(TileType tileType)
+		{
+			for (int x = 0; x < Width; x++)
+			{
+				for (int y = 0; y < Height; y++)
+				{
+					Vector2I gridPos = new Vector2I(x, y);
+					Tile tile = TileFactory.CreateTile(tileType, gridPos);
+					AddTile(gridPos, tile);
+				}
+			}
+		}
+
+		private void CreateRandomField()
+		{
 			var random = new RandomNumberGenerator();
 			random.Randomize();
 
@@ -39,11 +62,6 @@ namespace FarmGame.Scripts.Tiles
 					AddTile(gridPos, tile);
 				}
 			}
-
-			GD.Print($"Initialized {tiles.Count} tiles");
-			RenderTiles();
-			BuildTerrainCollision();
-			GD.Print($"Rendered {tileRenderers.Count} tile groups");
 		}
 
 		/// <summary>
@@ -208,7 +226,7 @@ namespace FarmGame.Scripts.Tiles
 		/// <summary>
 		/// Create an ArrayMesh box with material applied
 		/// </summary>
-		private Mesh CreateMesh(Material material)
+		private ArrayMesh CreateMesh(Material material)
 		{
 			float halfSize = TileSize / 2f;
 			SurfaceTool surfaceTool = new();
