@@ -210,73 +210,50 @@ namespace FarmGame.Scripts.Tiles
 		/// </summary>
 		private Mesh CreateMesh(Material material)
 		{
-			ArrayMesh mesh = new();
+			float halfSize = TileSize / 2f;
+			SurfaceTool surfaceTool = new();
+			surfaceTool.Begin(Mesh.PrimitiveType.Triangles);
+			surfaceTool.SetMaterial(material);
 
-			// Create vertices for a box
-			Vector3[] vertices =
-			[
-				// Bottom face
-				new(-TileSize / 2, 0, -TileSize / 2),
-				new(TileSize / 2, 0, -TileSize / 2),
-				new(TileSize / 2, 0, TileSize / 2),
-				new(-TileSize / 2, 0, TileSize / 2),
+			Vector3 bottomFrontLeft = new(-halfSize, 0, -halfSize);
+			Vector3 bottomFrontRight = new(halfSize, 0, -halfSize);
+			Vector3 bottomBackRight = new(halfSize, 0, halfSize);
+			Vector3 bottomBackLeft = new(-halfSize, 0, halfSize);
+			Vector3 topFrontLeft = new(-halfSize, 1.0f, -halfSize);
+			Vector3 topFrontRight = new(halfSize, 1.0f, -halfSize);
+			Vector3 topBackRight = new(halfSize, 1.0f, halfSize);
+			Vector3 topBackLeft = new(-halfSize, 1.0f, halfSize);
 
-				// Top face
-				new(-TileSize / 2, 1.0f, -TileSize / 2),
-				new(TileSize / 2, 1.0f, -TileSize / 2),
-				new(TileSize / 2, 1.0f, TileSize / 2),
-				new(-TileSize / 2, 1.0f, TileSize / 2),
-			];
+			AddQuad(surfaceTool, topFrontLeft, topFrontRight, topBackRight, topBackLeft, Vector3.Up);
+			AddQuad(surfaceTool, bottomFrontLeft, bottomFrontRight, topFrontRight, topFrontLeft, Vector3.Forward);
+			AddQuad(surfaceTool, bottomBackRight, bottomBackLeft, topBackLeft, topBackRight, Vector3.Back);
+			AddQuad(surfaceTool, bottomBackLeft, bottomFrontLeft, topFrontLeft, topBackLeft, Vector3.Left);
+			AddQuad(surfaceTool, bottomFrontRight, bottomBackRight, topBackRight, topFrontRight, Vector3.Right);
 
-			// Normals for each vertex
-			Vector3[] normals =
-			[
-				Vector3.Down, Vector3.Down, Vector3.Down, Vector3.Down,
-				Vector3.Up, Vector3.Up, Vector3.Up, Vector3.Up,
-			];
+			return surfaceTool.Commit();
+		}
 
-			// UVs
-			Vector2[] uvs =
-			[
-				new(0, 0), new(1, 0), new(1, 1), new(0, 1),
-				new(0, 0), new(1, 0), new(1, 1), new(0, 1),
-			];
+		private static void AddQuad(SurfaceTool surfaceTool, Vector3 a, Vector3 b, Vector3 c, Vector3 d, Vector3 normal)
+		{
+			surfaceTool.SetNormal(normal);
+			surfaceTool.SetUV(new Vector2(0, 0));
+			surfaceTool.AddVertex(a);
+			surfaceTool.SetNormal(normal);
+			surfaceTool.SetUV(new Vector2(1, 0));
+			surfaceTool.AddVertex(b);
+			surfaceTool.SetNormal(normal);
+			surfaceTool.SetUV(new Vector2(1, 1));
+			surfaceTool.AddVertex(c);
 
-			// Indices for triangles (all facing outward)
-			int[] indices =
-			[
-				// Top (facing up)
-				4, 5, 6,
-				4, 6, 7,
-
-				// Front
-				0, 1, 5,
-				0, 5, 4,
-
-				// Back
-				2, 3, 7,
-				2, 7, 6,
-
-				// Left
-				3, 0, 4,
-				3, 4, 7,
-
-				// Right
-				1, 2, 6,
-				1, 6, 5,
-			];
-
-			Godot.Collections.Array arrays = [];
-			arrays.Resize((int)Mesh.ArrayType.Max);
-			arrays[(int)Mesh.ArrayType.Vertex] = vertices;
-			arrays[(int)Mesh.ArrayType.Normal] = normals;
-			arrays[(int)Mesh.ArrayType.TexUV] = uvs;
-			arrays[(int)Mesh.ArrayType.Index] = indices;
-
-			mesh.AddSurfaceFromArrays(Mesh.PrimitiveType.Triangles, arrays);
-			mesh.SurfaceSetMaterial(0, material);
-
-			return mesh;
+			surfaceTool.SetNormal(normal);
+			surfaceTool.SetUV(new Vector2(0, 0));
+			surfaceTool.AddVertex(a);
+			surfaceTool.SetNormal(normal);
+			surfaceTool.SetUV(new Vector2(1, 1));
+			surfaceTool.AddVertex(c);
+			surfaceTool.SetNormal(normal);
+			surfaceTool.SetUV(new Vector2(0, 1));
+			surfaceTool.AddVertex(d);
 		}
 
 		/// <summary>
