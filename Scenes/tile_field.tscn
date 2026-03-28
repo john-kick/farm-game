@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://bpnuw51tqtwgn"]
+
+[ext_resource type="Script" uid="uid://b8vg21o10cs28" path="res://Scripts/Tiles/TileField.cs" id="1_j7k5m"]
+
+[node name="TileField" type="Node3D" unique_id=32322520]
+script = ExtResource("1_j7k5m")
+Width = 20
+Height = 20
