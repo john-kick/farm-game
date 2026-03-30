@@ -34,7 +34,7 @@ namespace FarmGame.Scripts.Tiles
 			CreateRandomField();
 
 			RenderTiles();
-			BuildTerrainCollision();
+			// BuildTerrainCollision();
 		}
 
 		private void CreateUniformField(TileType tileType)
@@ -148,6 +148,8 @@ namespace FarmGame.Scripts.Tiles
 		/// </summary>
 		private void RenderTiles()
 		{
+			StaticBody3D body = new() { Name = TerrainCollisionName };
+
 			// Group tiles by type
 			var groupedTiles = tiles.Values.GroupBy(t => t.TileType).ToList();
 
@@ -157,7 +159,7 @@ namespace FarmGame.Scripts.Tiles
 				List<Tile> tilesOfType = [.. group];
 
 				// Create material first (needed for mesh)
-				Material material = CreateMaterial(tileType, GetTileColor(tilesOfType[0]));
+				Material material = CreateMaterial(GetTileColor(tilesOfType[0]));
 
 				// Create mesh with material baked in
 				Mesh mesh = CreateMesh(material, tilesOfType[0].Height);
@@ -175,6 +177,14 @@ namespace FarmGame.Scripts.Tiles
 					Tile tile = tilesOfType[i];
 					Vector3 worldPos = GridToWorldPosition(tile.GridPosition);
 					multiMesh.SetInstanceTransform(i, new Transform3D(Basis.Identity, worldPos));
+
+					// Add collision shape
+					CollisionShape3D collisionShape = new()
+					{
+						Shape = mesh.CreateTrimeshShape(),
+						Position = worldPos
+					};
+					body.AddChild(collisionShape);
 
 					if (i == 0)
 					{
@@ -197,28 +207,8 @@ namespace FarmGame.Scripts.Tiles
 
 				tileRenderers[tileType] = meshInstance;
 			}
-		}
 
-		/// <summary>
-		/// Static collision aligned with each tile box (same center and size as the multimesh instances).
-		/// </summary>
-		private void BuildTerrainCollision()
-		{
-			var body = new StaticBody3D { Name = TerrainCollisionName };
 			AddChild(body);
-
-			foreach (Tile tile in tiles.Values)
-			{
-				float h = tile.Height;
-				Vector3 basePos = GridToWorldPosition(tile.GridPosition);
-				var box = new BoxShape3D { Size = new Vector3(TileSize, h, TileSize) };
-				var shape = new CollisionShape3D
-				{
-					Shape = box,
-					Position = basePos + new Vector3(0, h, 0)
-				};
-				body.AddChild(shape);
-			}
 		}
 
 		/// <summary>
@@ -277,18 +267,8 @@ namespace FarmGame.Scripts.Tiles
 		/// <summary>
 		/// Create a material for the given tile
 		/// </summary>
-		private static StandardMaterial3D CreateMaterial(TileType tileType, Color color)
+		private static StandardMaterial3D CreateMaterial(Color color)
 		{
-			// if (tileType == TileType.Grass)
-			// {
-			// 	var transparentGrass = new StandardMaterial3D
-			// 	{
-			// 		AlbedoColor = new Color(color.R, color.G, color.B, 0.35f),
-			// 		Transparency = BaseMaterial3D.TransparencyEnum.Alpha
-			// 	};
-			// 	return transparentGrass;
-			// }
-
 			var material = new StandardMaterial3D
 			{
 				AlbedoColor = color
@@ -308,45 +288,6 @@ namespace FarmGame.Scripts.Tiles
 				StoneTile s => s.StoneColor,
 				_ => Colors.White
 			};
-		}
-
-		/// <summary>
-		/// Get the world-space vertices of the first tile
-		/// </summary>
-		public Vector3[] GetFirstTileVertices()
-		{
-			if (tiles.Count == 0)
-				return [];
-
-			Tile firstTile = tiles.Values.First();
-			float halfSize = TileSize / 2f;
-			float height = firstTile.Height;
-			Vector3 basePos = GridToWorldPosition(firstTile.GridPosition);
-			// Apply the same transform as in RenderTiles
-			Vector3 origin = basePos + new Vector3(0, height / 2, 0);
-			Basis basis = Basis.Identity.Scaled(new Vector3(1.0f, height, 1.0f));
-
-			// Local vertices of the mesh (Y from 0 to 1.0, then scaled by height in rendering)
-			Vector3[] localVertices =
-			[
-				new Vector3(-halfSize, 0, -halfSize),      // bottomFrontLeft
-				new Vector3(halfSize, 0, -halfSize),       // bottomFrontRight
-				new Vector3(halfSize, 0, halfSize),        // bottomBackRight
-				new Vector3(-halfSize, 0, halfSize),       // bottomBackLeft
-				new Vector3(-halfSize, 1.0f, -halfSize),   // topFrontLeft
-				new Vector3(halfSize, 1.0f, -halfSize),    // topFrontRight
-				new Vector3(halfSize, 1.0f, halfSize),     // topBackRight
-				new Vector3(-halfSize, 1.0f, halfSize)     // topBackLeft
-			];
-
-			// Transform to world space: world = origin + basis * local
-			Vector3[] worldVertices = new Vector3[8];
-			for (int i = 0; i < localVertices.Length; i++)
-			{
-				worldVertices[i] = origin + basis * localVertices[i];
-			}
-
-			return worldVertices;
 		}
 	}
 }

@@ -13,10 +13,8 @@ transform = Transform3D(0.92388, 0, 0.382683, 0, 1, 0, -0.382683, 0, 0.92388, 4.
 MoveSpeed = 10.0
 FastMultiplier = 1.5
 
-[node name="DebugUI" parent="." unique_id=1645079385 node_paths=PackedStringArray("player", "tileField", "tileIndicator") instance=ExtResource("4_jjvhh")]
+[node name="DebugUI" parent="." unique_id=1645079385 node_paths=PackedStringArray("player") instance=ExtResource("4_jjvhh")]
 player = NodePath("../Player")
-tileField = NodePath("../TileField")
-tileIndicator = NodePath("")
 
 [node name="Sun" type="DirectionalLight3D" parent="." unique_id=446433848]
 transform = Transform3D(1, 0, 0, 0, 0.7095584, 0.7046466, 0, -0.7046466, 0.7095584, 0, 51.351753, 0)
