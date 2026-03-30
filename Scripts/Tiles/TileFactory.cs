@@ -7,18 +7,15 @@ namespace FarmGame.Scripts.Tiles
 		/// <summary>
 		/// Create a tile of the specified type
 		/// </summary>
-		public static Tile CreateTile(TileType type, Vector2I gridPos)
+		public static Tile CreateTile(TileType type)
 		{
-			Tile tile = type switch
+			return type switch
 			{
 				TileType.Grass => new GrassTile(),
 				TileType.Dirt => new DirtTile(),
 				TileType.Stone => new StoneTile(),
 				_ => new GrassTile()
 			};
-
-			tile.GridPosition = gridPos;
-			return tile;
 		}
 	}
 }

@@ -11,7 +11,7 @@ namespace FarmGame.Scripts
 		[Export] public bool ShowHitIndicator = false;
 
 		private Camera3D camera;
-		private TileField tileField;
+		private Field field;
 		private Debug debugPanel;
 		private TileIndicator tileIndicator;
 		private MeshInstance3D hitIndicator;
@@ -20,12 +20,12 @@ namespace FarmGame.Scripts
 		{
 			Engine.MaxFps = 0;
 			camera = GetNode<Camera3D>("Player/Camera");
-			tileField = GetNode<TileField>("TileField");
+			field = GetNode<Field>("Field");
 			debugPanel = (Debug)GetNode<CanvasLayer>("DebugUI");
 
 			tileIndicator = new TileIndicator
 			{
-				Mesh = new PlaneMesh() { Size = new Vector2(tileField.TileSize, tileField.TileSize) },
+				Mesh = new PlaneMesh() { Size = new Vector2(field.TileSize, field.TileSize) },
 				MaterialOverride = new ShaderMaterial() { Shader = GD.Load<Shader>("res://Shaders/tile_indicator.gdshader") }
 			};
 			AddChild(tileIndicator);
@@ -63,7 +63,7 @@ namespace FarmGame.Scripts
 
 		private void LookingAt()
 		{
-			if (camera == null || tileField == null)
+			if (camera == null || field == null)
 			{
 				tileIndicator.Hide();
 				return;
@@ -96,11 +96,11 @@ namespace FarmGame.Scripts
 			if (hitIndicator != null)
 				hitIndicator.Position = hitPosition;
 
-			Vector3 localHitPosition = tileField.ToLocal(hitPosition);
-			Vector2I gridPosition = tileField.WorldToGridPosition(localHitPosition);
-			Tile hoveredTile = tileField.GetTile(gridPosition);
+			Vector3 localHitPosition = field.ToLocal(hitPosition);
+			Vector2I gridPosition = field.WorldToGridPosition(localHitPosition);
+			Tile hoveredTile = field.GetTile(gridPosition);
 			float tileTop = hoveredTile != null ? hoveredTile.Height : 0f;
-			Vector3 TileIndicatorPosition = tileField.ToGlobal(tileField.GridToWorldPosition(gridPosition) + new Vector3(0, tileTop + 0.1f, 0));
+			Vector3 TileIndicatorPosition = field.ToGlobal(field.GridToWorldPosition(gridPosition) + new Vector3(0, tileTop + 0.1f, 0));
 			tileIndicator.SetTargetPosition(TileIndicatorPosition);
 			debugPanel.LookingAt(hoveredTile);
 		}

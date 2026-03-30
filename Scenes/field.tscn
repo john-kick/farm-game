@@ -1,0 +1,8 @@
+[gd_scene format=3 uid="uid://bpnuw51tqtwgn"]
+
+[ext_resource type="Script" uid="uid://bt6n7h25533ku" path="res://Scripts/Environment/Field.cs" id="1_0j7qm"]
+
+[node name="Field" type="Node3D" unique_id=32322520]
+script = ExtResource("1_0j7qm")
+Width = 20
+Height = 20
