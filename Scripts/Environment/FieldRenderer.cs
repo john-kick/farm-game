@@ -1,8 +1,9 @@
+using FarmGame.Scripts.Tiles;
 using Godot;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace FarmGame.Scripts.Tiles
+namespace FarmGame.Scripts.Environment
 {
 	public class FieldRenderer
 	{

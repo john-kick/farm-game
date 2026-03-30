@@ -1,7 +1,8 @@
+using FarmGame.Scripts.Tiles;
 using Godot;
 using System.Collections.Generic;
 
-namespace FarmGame.Scripts.Tiles
+namespace FarmGame.Scripts.Environment
 {
 	public partial class Field : Node3D
 	{
