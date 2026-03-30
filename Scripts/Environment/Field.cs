@@ -1,22 +1,20 @@
 using Godot;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace FarmGame.Scripts.Tiles
 {
 	public partial class Field : Node3D
 	{
-		private const string TerrainCollisionName = "TerrainCollision";
-
 		[Export] public int Width = 20;
 		[Export] public int Height = 20;
 		[Export] public float TileSize = 1.0f;
 
 		private readonly Dictionary<Vector2I, Tile> tiles = [];
-		private readonly Dictionary<TileType, MultiMeshInstance3D> tileRenderers = [];
+		private FieldRenderer fieldRenderer;
 
 		public override void _Ready()
 		{
+			fieldRenderer = new FieldRenderer(this);
 			InitializeField(TileSize);
 		}
 
@@ -114,13 +112,7 @@ namespace FarmGame.Scripts.Tiles
 		public void ClearField()
 		{
 			tiles.Clear();
-
-			// Remove old renderers
-			foreach (var renderer in tileRenderers.Values)
-				renderer.QueueFree();
-			
-			tileRenderers.Clear();
-			GetNodeOrNull<StaticBody3D>(TerrainCollisionName)?.QueueFree();
+			fieldRenderer?.Clear();
 		}
 
 		/// <summary>
@@ -132,68 +124,6 @@ namespace FarmGame.Scripts.Tiles
 				   gridPos.Y >= 0 && gridPos.Y < Height;
 		}
 
-		/// <summary>
-		/// Render all tiles using MultiMesh for performance
-		/// </summary>
-		private void RenderTiles()
-		{
-			StaticBody3D body = new() { Name = TerrainCollisionName };
-			List<IGrouping<TileType, Tile>> groupedTiles = [.. tiles.Values.GroupBy(t => t.TileType)];
-
-			foreach (IGrouping<TileType, Tile> group in groupedTiles)
-				RenderTileGroup(group, body);
-
-			AddChild(body);
-		}
-
-		private void RenderTileGroup(IGrouping<TileType, Tile> group, StaticBody3D body)
-		{
-			TileType tileType = group.Key;
-			List<Tile> tilesOfType = [.. group];
-
-			ArrayMesh mesh = tilesOfType[0].CreateMesh(TileSize);
-			MultiMesh multiMesh = new()
-			{
-				Mesh = mesh,
-				TransformFormat = MultiMesh.TransformFormatEnum.Transform3D,
-				InstanceCount = tilesOfType.Count
-			};
-
-			// Set transforms for each tile
-			for (int i = 0; i < tilesOfType.Count; i++)
-			{
-				Tile tile = tilesOfType[i];
-				Vector3 worldPos = GridToWorldPosition(tile.GridPosition);
-				SetTileTransform(multiMesh, worldPos, tile, i);
-				AddCollisionShape(body, worldPos, mesh);
-			}
-
-			// Create MultiMeshInstance3D for this tile type
-			MultiMeshInstance3D meshInstance = new()
-			{
-				Multimesh = multiMesh,
-				Name = $"{tileType}Group",
-				Visible = true,
-				CastShadow = GeometryInstance3D.ShadowCastingSetting.Off
-			};
-			AddChild(meshInstance);
-
-			tileRenderers[tileType] = meshInstance;
-		}
-
-		private static void SetTileTransform(MultiMesh multiMesh, Vector3 position, Tile tile, int index)
-		{
-			multiMesh.SetInstanceTransform(index, new Transform3D(Basis.Identity, position));
-		}
-
-		private static void AddCollisionShape(StaticBody3D body, Vector3 position, ArrayMesh mesh)
-		{
-			CollisionShape3D collisionShape = new()
-			{
-				Shape = mesh.CreateTrimeshShape(),
-				Position = position
-			};
-			body.AddChild(collisionShape);
-		}
+		private void RenderTiles() => fieldRenderer?.RenderTiles(tiles.Values, TileSize);
 	}
 }
