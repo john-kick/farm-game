@@ -12,23 +12,26 @@ namespace FarmGame.Scripts.Tiles
 		[Export] public int Height = 10;
 		[Export] public float TileSize = 1.0f;
 
-		private Dictionary<Vector2I, Tile> tiles = new();
-		private Dictionary<TileType, MultiMeshInstance3D> tileRenderers = new();
+		private readonly Dictionary<Vector2I, Tile> tiles = [];
+		private readonly Dictionary<TileType, MultiMeshInstance3D> tileRenderers = [];
 
 		public override void _Ready()
 		{
 			CallDeferred(MethodName.InitializeField);
 		}
 
-		/// <summary>
-		/// Initialize the tile field with random tiles
-		/// </summary>
 		public void InitializeField()
 		{
+			InitializeField(TileSize);
+		}
+
+		public void InitializeField(float TileSize)
+		{
+			this.TileSize = TileSize;
 			ClearField();
 
-			// CreateRandomField();			
-			CreateUniformField(TileType.Grass);
+			// CreateUniformField(TileType.Grass);
+			CreateRandomField();
 
 			RenderTiles();
 			BuildTerrainCollision();
@@ -40,7 +43,7 @@ namespace FarmGame.Scripts.Tiles
 			{
 				for (int y = 0; y < Height; y++)
 				{
-					Vector2I gridPos = new Vector2I(x, y);
+					Vector2I gridPos = new(x, y);
 					Tile tile = TileFactory.CreateTile(tileType, gridPos);
 					AddTile(gridPos, tile);
 				}
@@ -56,7 +59,7 @@ namespace FarmGame.Scripts.Tiles
 			{
 				for (int y = 0; y < Height; y++)
 				{
-					Vector2I gridPos = new Vector2I(x, y);
+					Vector2I gridPos = new(x, y);
 					TileType tileType = (TileType)(random.Randi() % 3);
 					Tile tile = TileFactory.CreateTile(tileType, gridPos);
 					AddTile(gridPos, tile);
@@ -148,16 +151,16 @@ namespace FarmGame.Scripts.Tiles
 			// Group tiles by type
 			var groupedTiles = tiles.Values.GroupBy(t => t.TileType).ToList();
 
-			foreach (var group in groupedTiles)
+			foreach (IGrouping<TileType, Tile> group in groupedTiles)
 			{
 				TileType tileType = group.Key;
 				List<Tile> tilesOfType = [.. group];
 
 				// Create material first (needed for mesh)
-				Material material = CreateMaterial(GetTileColor(tilesOfType[0]));
+				Material material = CreateMaterial(tileType, GetTileColor(tilesOfType[0]));
 
 				// Create mesh with material baked in
-				Mesh mesh = CreateMesh(material);
+				Mesh mesh = CreateMesh(material, tilesOfType[0].Height);
 
 				MultiMesh multiMesh = new()
 				{
@@ -171,16 +174,11 @@ namespace FarmGame.Scripts.Tiles
 				{
 					Tile tile = tilesOfType[i];
 					Vector3 worldPos = GridToWorldPosition(tile.GridPosition);
-					float height = tile.Height;
-
-					// Struct default Basis is zero; must start from Identity before scaling.
-					Basis basis = Basis.Identity.Scaled(new Vector3(1.0f, height, 1.0f));
-					Vector3 origin = worldPos + new Vector3(0, height / 2, 0);
-					multiMesh.SetInstanceTransform(i, new Transform3D(basis, origin));
+					multiMesh.SetInstanceTransform(i, new Transform3D(Basis.Identity, worldPos));
 
 					if (i == 0)
 					{
-						GD.Print($"First {tileType} tile at grid {tile.GridPosition}, world pos: {worldPos}, instance origin: {origin}");
+						GD.Print($"First {tileType} tile at grid {tile.GridPosition}, world pos: {worldPos}");
 					}
 				}
 
@@ -217,7 +215,7 @@ namespace FarmGame.Scripts.Tiles
 				var shape = new CollisionShape3D
 				{
 					Shape = box,
-					Position = basePos + new Vector3(0, h / 2f, 0)
+					Position = basePos + new Vector3(0, h, 0)
 				};
 				body.AddChild(shape);
 			}
@@ -226,7 +224,7 @@ namespace FarmGame.Scripts.Tiles
 		/// <summary>
 		/// Create an ArrayMesh box with material applied
 		/// </summary>
-		private ArrayMesh CreateMesh(Material material)
+		private ArrayMesh CreateMesh(Material material, float height)
 		{
 			float halfSize = TileSize / 2f;
 			SurfaceTool surfaceTool = new();
@@ -237,10 +235,10 @@ namespace FarmGame.Scripts.Tiles
 			Vector3 bottomFrontRight = new(halfSize, 0, -halfSize);
 			Vector3 bottomBackRight = new(halfSize, 0, halfSize);
 			Vector3 bottomBackLeft = new(-halfSize, 0, halfSize);
-			Vector3 topFrontLeft = new(-halfSize, 1.0f, -halfSize);
-			Vector3 topFrontRight = new(halfSize, 1.0f, -halfSize);
-			Vector3 topBackRight = new(halfSize, 1.0f, halfSize);
-			Vector3 topBackLeft = new(-halfSize, 1.0f, halfSize);
+			Vector3 topFrontLeft = new(-halfSize, height, -halfSize);
+			Vector3 topFrontRight = new(halfSize, height, -halfSize);
+			Vector3 topBackRight = new(halfSize, height, halfSize);
+			Vector3 topBackLeft = new(-halfSize, height, halfSize);
 
 			AddQuad(surfaceTool, topFrontLeft, topFrontRight, topBackRight, topBackLeft, Vector3.Up);
 			AddQuad(surfaceTool, bottomFrontLeft, bottomFrontRight, topFrontRight, topFrontLeft, Vector3.Forward);
@@ -272,13 +270,25 @@ namespace FarmGame.Scripts.Tiles
 			surfaceTool.SetNormal(normal);
 			surfaceTool.SetUV(new Vector2(0, 1));
 			surfaceTool.AddVertex(d);
+
+			GD.Print($"Added quad with vertices: {a}, {b}, {c}, {d} and normal {normal}");
 		}
 
 		/// <summary>
 		/// Create a material for the given tile
 		/// </summary>
-		private Material CreateMaterial(Color color)
+		private static StandardMaterial3D CreateMaterial(TileType tileType, Color color)
 		{
+			// if (tileType == TileType.Grass)
+			// {
+			// 	var transparentGrass = new StandardMaterial3D
+			// 	{
+			// 		AlbedoColor = new Color(color.R, color.G, color.B, 0.35f),
+			// 		Transparency = BaseMaterial3D.TransparencyEnum.Alpha
+			// 	};
+			// 	return transparentGrass;
+			// }
+
 			var material = new StandardMaterial3D
 			{
 				AlbedoColor = color
@@ -298,6 +308,45 @@ namespace FarmGame.Scripts.Tiles
 				StoneTile s => s.StoneColor,
 				_ => Colors.White
 			};
+		}
+
+		/// <summary>
+		/// Get the world-space vertices of the first tile
+		/// </summary>
+		public Vector3[] GetFirstTileVertices()
+		{
+			if (tiles.Count == 0)
+				return [];
+
+			Tile firstTile = tiles.Values.First();
+			float halfSize = TileSize / 2f;
+			float height = firstTile.Height;
+			Vector3 basePos = GridToWorldPosition(firstTile.GridPosition);
+			// Apply the same transform as in RenderTiles
+			Vector3 origin = basePos + new Vector3(0, height / 2, 0);
+			Basis basis = Basis.Identity.Scaled(new Vector3(1.0f, height, 1.0f));
+
+			// Local vertices of the mesh (Y from 0 to 1.0, then scaled by height in rendering)
+			Vector3[] localVertices =
+			[
+				new Vector3(-halfSize, 0, -halfSize),      // bottomFrontLeft
+				new Vector3(halfSize, 0, -halfSize),       // bottomFrontRight
+				new Vector3(halfSize, 0, halfSize),        // bottomBackRight
+				new Vector3(-halfSize, 0, halfSize),       // bottomBackLeft
+				new Vector3(-halfSize, 1.0f, -halfSize),   // topFrontLeft
+				new Vector3(halfSize, 1.0f, -halfSize),    // topFrontRight
+				new Vector3(halfSize, 1.0f, halfSize),     // topBackRight
+				new Vector3(-halfSize, 1.0f, halfSize)     // topBackLeft
+			];
+
+			// Transform to world space: world = origin + basis * local
+			Vector3[] worldVertices = new Vector3[8];
+			for (int i = 0; i < localVertices.Length; i++)
+			{
+				worldVertices[i] = origin + basis * localVertices[i];
+			}
+
+			return worldVertices;
 		}
 	}
 }
