@@ -2,6 +2,7 @@ using Godot;
 using FarmGame.Scripts.UI;
 using FarmGame.Scripts.Tiles;
 using Godot.Collections;
+using FarmGame.Scripts.Environment;
 
 namespace FarmGame.Scripts
 {
