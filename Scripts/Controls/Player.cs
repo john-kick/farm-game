@@ -43,12 +43,14 @@ namespace FarmGame.Scripts.Controls
 
 		public override void _PhysicsProcess(double delta)
 		{
-			ApplyMovementInput(delta);
+			targetVelocity = Velocity;
+			ApplyMovementInput();
 			ApplyGravity(delta);
+			Velocity = targetVelocity;
 			Move();
 		}
 
-		private void ApplyMovementInput(double delta)
+		private void ApplyMovementInput()
 		{
 			float speed = Speed;
 
@@ -70,15 +72,10 @@ namespace FarmGame.Scripts.Controls
 			targetVelocity.X = direction.X * speed;
 			targetVelocity.Z = direction.Z * speed;
 
-			if (Input.IsActionJustPressed("ui_jump"))
+			if (Input.IsActionJustPressed("ui_jump") && IsOnFloor())
 			{
-				if (IsOnFloor())
-				{
-					Jump();
-				}
+				Jump();
 			}
-
-			Velocity = targetVelocity;
 		}
 
 		private void Jump()
@@ -88,7 +85,15 @@ namespace FarmGame.Scripts.Controls
 
 		private void ApplyGravity(double delta)
 		{
-			if (!IsOnFloor()) targetVelocity.Y -= Gravity * (float)delta;
+			if (IsOnFloor())
+			{
+				if (targetVelocity.Y < 0)
+					targetVelocity.Y = 0;
+
+				return;
+			}
+
+			targetVelocity.Y -= Gravity * (float)delta;
 		}
 
 		private void Move()
