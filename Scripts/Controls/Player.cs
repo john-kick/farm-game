@@ -35,9 +35,9 @@ namespace FarmGame.Scripts.Controls
 
 			if (@event is InputEventMouseMotion mouseMotion)
 			{
-				Vector3 targetRotation = new Vector3(mouseMotion.Relative.Y, mouseMotion.Relative.X, 0) * MouseSensitivity;
-				RotationDegrees -= targetRotation;
-				RotationDegrees = new Vector3(Mathf.Clamp(RotationDegrees.X, -89, 89), RotationDegrees.Y, RotationDegrees.Z);
+				RotationDegrees -= new Vector3(0, mouseMotion.Relative.X, 0) * MouseSensitivity;
+				camera.RotationDegrees -= new Vector3(mouseMotion.Relative.Y, 0, 0) * MouseSensitivity;
+				camera.RotationDegrees = new Vector3(Mathf.Clamp(camera.RotationDegrees.X, -89, 89), 0, 0);
 			}
 		}
 
