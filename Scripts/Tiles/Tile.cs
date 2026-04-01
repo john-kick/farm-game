@@ -19,6 +19,8 @@ namespace FarmGame.Scripts.Tiles
 		/// </summary>
 		public abstract Material Material { get; }
 
+		public Material MaterialOverride;
+
 		/// <summary>
 		/// Grid position of this tile
 		/// </summary>
@@ -29,7 +31,8 @@ namespace FarmGame.Scripts.Tiles
 			float halfSize = TileSize / 2f;
 			SurfaceTool surfaceTool = new();
 			surfaceTool.Begin(Mesh.PrimitiveType.Triangles);
-			surfaceTool.SetMaterial(Material);
+			Material material = MaterialOverride ?? Material;
+			surfaceTool.SetMaterial(material);
 
 			Vector3 bottomFrontLeft = new(-halfSize, 0, -halfSize);
 			Vector3 bottomFrontRight = new(halfSize, 0, -halfSize);

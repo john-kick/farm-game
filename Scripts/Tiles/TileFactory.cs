@@ -1,5 +1,3 @@
-using Godot;
-
 namespace FarmGame.Scripts.Tiles
 {
 	public static class TileFactory
@@ -14,6 +12,7 @@ namespace FarmGame.Scripts.Tiles
 				TileType.Grass => new GrassTile(),
 				TileType.Dirt => new DirtTile(),
 				TileType.Stone => new StoneTile(),
+				TileType.Edge => new EdgeTile(),
 				_ => new GrassTile()
 			};
 		}

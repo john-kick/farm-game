@@ -4,6 +4,7 @@ namespace FarmGame.Scripts.Tiles
 	{
 		Grass,
 		Dirt,
-		Stone
+		Stone,
+		Edge
 	}
 }

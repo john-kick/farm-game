@@ -8,10 +8,6 @@ namespace FarmGame.Scripts.Tiles
 
 		public override TileType TileType => TileType.Grass;
 		public override float Height => 0.95f;
-
-        public override Material Material => new StandardMaterial3D()
-		{
-			AlbedoColor = GrassColor
-		};
-    }
+		public override Material Material => new StandardMaterial3D() { AlbedoColor = GrassColor };
+	}
 }

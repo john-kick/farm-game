@@ -24,6 +24,7 @@ namespace FarmGame.Scripts.Environment
 			this.TileSize = TileSize;
 			ClearField();
 			CreateRandomField();
+			CreateEdgeTiles();
 			RenderTiles();
 		}
 
@@ -57,6 +58,53 @@ namespace FarmGame.Scripts.Environment
 					AddTile(gridPos, tile);
 				}
 			}
+		}
+
+		private void CreateEdgeTiles()
+		{
+			// Tiles are created from x=0,z=0 to x=Width-1,y=Height-1.
+			// Edge-Tiles need to exist at x=-1, z=-1, x=Width, z=Width.
+			// Each edge (north,south,east,west) handles their own tiles,
+			// + the tiles to the left of them when looking field-inward.
+
+			// West (x=-1)
+			AddEdgeTile(new Vector2I(-1, Height));
+			for (int z = 0; z < Height; z++)
+			{
+				Vector2I gridPos = new(-1, z);
+				AddEdgeTile(gridPos);
+			}
+
+			// South (z=-1)
+			AddEdgeTile(new Vector2I(-1, -1));
+			for (int x = 0; x < Width; x++)
+			{
+				Vector2I gridPos = new(x, -1);
+				AddEdgeTile(gridPos);
+			}
+
+			// East (x=Width)
+			AddEdgeTile(new Vector2I(Width, -1));
+			for (int z = 0; z < Height; z++)
+			{
+				Vector2I gridPos = new(Width, z);
+				AddEdgeTile(gridPos);
+			}
+
+			// North (z=Height)
+			AddEdgeTile(new Vector2I(Width, Height));
+			for (int x = 0; x < Width; x++)
+			{
+				Vector2I gridPos = new(x, Height);
+				AddEdgeTile(gridPos);
+			}
+		}
+
+		private void AddEdgeTile(Vector2I pos)
+		{
+			Tile tile = TileFactory.CreateTile(TileType.Edge);
+			tile.GridPosition = pos;
+			AddTile(pos, tile);
 		}
 
 		/// <summary>
