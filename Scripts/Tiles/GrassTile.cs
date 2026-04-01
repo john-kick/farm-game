@@ -1,3 +1,4 @@
+using FarmGame.Scripts.Controls.Interactions;
 using Godot;
 
 namespace FarmGame.Scripts.Tiles
@@ -10,9 +11,9 @@ namespace FarmGame.Scripts.Tiles
 		public override float Height => 0.95f;
 		public override Material Material => new StandardMaterial3D() { AlbedoColor = GrassColor };
 
-		public override void OnInteract()
+		public override Interaction PrimaryInteraction()
 		{
-			GD.Print("Grass touched!");
+			return new ReplaceTileInteraction(TileType.Dirt);
 		}
 	}
 }

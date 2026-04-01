@@ -1,4 +1,4 @@
-using FarmGame.Scripts.Controls;
+using FarmGame.Scripts.Controls.Interactions;
 using Godot;
 
 namespace FarmGame.Scripts.Tiles
@@ -76,9 +76,8 @@ namespace FarmGame.Scripts.Tiles
 			surfaceTool.AddVertex(d);
 		}
 
-        public virtual void OnInteract()
-        {
-            // No default behavior
-        }
-    }
+		public virtual Interaction PrimaryInteraction() => new NoInteraction();
+		public virtual Interaction SecondaryInteraction() => new NoInteraction();
+		public virtual Interaction TertiaryInteraction() => new NoInteraction();
+	}
 }

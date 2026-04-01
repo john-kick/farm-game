@@ -183,6 +183,12 @@ namespace FarmGame.Scripts.Environment
 				   gridPos.Y >= 0 && gridPos.Y < Height;
 		}
 
+		public void Refresh()
+		{
+			fieldRenderer?.Clear();
+			RenderTiles();
+		}
+
 		private void RenderTiles() => fieldRenderer?.RenderTiles(tiles.Values, TileSize);
 	}
 }

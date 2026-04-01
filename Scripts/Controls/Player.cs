@@ -1,7 +1,7 @@
-using System.Collections.Generic;
 using Godot;
 using Godot.Collections;
 using FarmGame.Scripts.Environment;
+using FarmGame.Scripts.Controls.Interactions;
 using FarmGame.Scripts.Tiles;
 
 namespace FarmGame.Scripts.Controls
@@ -41,7 +41,11 @@ namespace FarmGame.Scripts.Controls
 				return;
 
 			if (@event.IsActionPressed("ui_primary_action"))
-				HandleClick();
+				HandleInteraction();
+			if (@event.IsActionPressed("ui_secondary_action"))
+				HandleInteraction(InteractionType.Secondary);
+			if (@event.IsActionPressed("ui_tertiary_action"))
+				HandleInteraction(InteractionType.Tertiary);
 
 			if (@event is InputEventMouseMotion mouseMotion)
 			{
@@ -111,7 +115,7 @@ namespace FarmGame.Scripts.Controls
 			MoveAndSlide();
 		}
 
-		private void HandleClick()
+		private void HandleInteraction(InteractionType interactionType = InteractionType.Primary)
 		{
 			if (camera == null)
 				return;
@@ -140,7 +144,24 @@ namespace FarmGame.Scripts.Controls
 
 			Vector3 hitPosition = hitPositionVariant.AsVector3();
 			IInteractable interactable = ResolveInteractable(hitNode, hitPosition);
-			interactable?.OnInteract();
+
+
+			Interaction interaction = interactionType switch
+			{
+				InteractionType.Primary => interactable?.PrimaryInteraction(),
+				InteractionType.Secondary => interactable?.SecondaryInteraction(),
+				InteractionType.Tertiary => interactable?.TertiaryInteraction(),
+				_ => null
+			};
+
+			if (interaction is ReplaceTileInteraction replaceTileInteraction)
+			{
+				Vector3 localHitPosition = field.ToLocal(hitPosition);
+				Vector2I gridPosition = field.WorldToGridPosition(localHitPosition);
+				Tile newTile = TileFactory.CreateTile(replaceTileInteraction.NewTileType);
+				field.AddTile(gridPosition, newTile);
+				field.Refresh();
+			}
 		}
 
 		private IInteractable ResolveInteractable(Node hitNode, Vector3 hitPosition)
