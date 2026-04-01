@@ -9,6 +9,7 @@ namespace FarmGame.Scripts.Environment
 		[Export] public int Width = 20;
 		[Export] public int Height = 20;
 		[Export] public float TileSize = 1.0f;
+		[Export] public FieldType FieldType = FieldType.Grass;
 
 		private readonly Dictionary<Vector2I, Tile> tiles = [];
 		private FieldRenderer fieldRenderer;
@@ -23,7 +24,16 @@ namespace FarmGame.Scripts.Environment
 		{
 			this.TileSize = TileSize;
 			ClearField();
-			CreateRandomField();
+
+			if (FieldType == FieldType.Random)
+				CreateRandomField();
+			if (FieldType == FieldType.Grass)
+				CreateUniformField(TileType.Grass);
+			if (FieldType == FieldType.Stone)
+				CreateUniformField(TileType.Stone);
+			if (FieldType == FieldType.Dirt)
+				CreateUniformField(TileType.Dirt);
+
 			CreateEdgeTiles();
 			RenderTiles();
 		}
