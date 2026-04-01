@@ -1,6 +1,6 @@
 using Godot;
 
-namespace FarmGame.Scripts.Player
+namespace FarmGame.Scripts.Controls
 {
 	public partial class Player : CharacterBody3D
 	{

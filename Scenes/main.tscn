@@ -3,15 +3,17 @@
 [ext_resource type="Script" uid="uid://cfbvndqjs70pi" path="res://Scripts/Main.cs" id="1_bo1nx"]
 [ext_resource type="PackedScene" uid="uid://cggldt6wqglsw" path="res://Scenes/player.tscn" id="2_bo1nx"]
 [ext_resource type="PackedScene" uid="uid://dfjq66ecd4vuj" path="res://Scenes/debug_ui.tscn" id="4_jjvhh"]
-[ext_resource type="PackedScene" uid="uid://bpnuw51tqtwgn" path="res://Scenes/tile_field.tscn" id="4_kry3j"]
+[ext_resource type="PackedScene" uid="uid://bpnuw51tqtwgn" path="res://Scenes/field.tscn" id="4_kry3j"]
 
 [node name="Main" type="Node3D" unique_id=1547825884]
 script = ExtResource("1_bo1nx")
 
 [node name="Player" parent="." unique_id=173540491 instance=ExtResource("2_bo1nx")]
 transform = Transform3D(0.92388, 0, 0.382683, 0, 1, 0, -0.382683, 0, 0.92388, 4.9270296, 10, 3.6520805)
-MoveSpeed = 10.0
+Speed = 8.0
 FastMultiplier = 1.5
+JumpStrength = 5.0
+Gravity = 9.81
 
 [node name="DebugUI" parent="." unique_id=1645079385 node_paths=PackedStringArray("player") instance=ExtResource("4_jjvhh")]
 player = NodePath("../Player")
