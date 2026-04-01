@@ -1,4 +1,8 @@
+using System.Collections.Generic;
 using Godot;
+using Godot.Collections;
+using FarmGame.Scripts.Environment;
+using FarmGame.Scripts.Tiles;
 
 namespace FarmGame.Scripts.Controls
 {
@@ -10,15 +14,18 @@ namespace FarmGame.Scripts.Controls
 		[Export] public float MouseSensitivity = .15f;
 		[Export] public float Gravity = 0.3f;
 		[Export] public float DoubleTapTime = 0.2f;
+		[Export] public float MaxInteractDistance = 5.0f;
 
 		private float jumpLastPressed = 0.0f;
 		private Vector3 targetVelocity;
 		private Camera3D camera;
+		private Field field;
 
 		public override void _Ready()
 		{
 			Input.MouseMode = Input.MouseModeEnum.Captured;
 			camera = GetNode<Camera3D>("Camera");
+			field = GetNodeOrNull<Field>("../Field");
 		}
 
 		public override void _Input(InputEvent @event)
@@ -32,6 +39,9 @@ namespace FarmGame.Scripts.Controls
 
 			if (Input.MouseMode != Input.MouseModeEnum.Captured)
 				return;
+
+			if (@event.IsActionPressed("ui_primary_action"))
+				HandleClick();
 
 			if (@event is InputEventMouseMotion mouseMotion)
 			{
@@ -99,6 +109,68 @@ namespace FarmGame.Scripts.Controls
 		private void Move()
 		{
 			MoveAndSlide();
+		}
+
+		private void HandleClick()
+		{
+			if (camera == null)
+				return;
+
+			Vector2 center = GetViewport().GetVisibleRect().Size / 2;
+			Vector3 rayOrigin = camera.ProjectRayOrigin(center);
+			Vector3 rayDirection = camera.ProjectRayNormal(center);
+			Vector3 rayEnd = rayOrigin + rayDirection * MaxInteractDistance;
+
+			PhysicsDirectSpaceState3D spaceState = GetWorld3D().DirectSpaceState;
+			PhysicsRayQueryParameters3D query = PhysicsRayQueryParameters3D.Create(rayOrigin, rayEnd);
+			query.CollideWithAreas = false;
+			query.CollideWithBodies = true;
+
+			// Exclude the player itself from the raycast
+			query.Exclude = [GetRid()];
+			Dictionary result = spaceState.IntersectRay(query);
+
+			if (result.Count == 0 ||
+				!result.TryGetValue("position", out Variant hitPositionVariant) ||
+				!result.TryGetValue("collider", out Variant colliderVariant))
+				return;
+
+			if (colliderVariant.AsGodotObject() is not Node hitNode)
+				return;
+
+			Vector3 hitPosition = hitPositionVariant.AsVector3();
+			IInteractable interactable = ResolveInteractable(hitNode, hitPosition);
+			interactable?.OnInteract();
+		}
+
+		private IInteractable ResolveInteractable(Node hitNode, Vector3 hitPosition)
+		{
+			IInteractable interactable = FindInteractableInHierarchy(hitNode);
+			if (interactable != null)
+				return interactable;
+
+			if (field == null || !IsFieldCollision(hitNode))
+				return null;
+
+			Vector3 localHitPosition = field.ToLocal(hitPosition);
+			Vector2I gridPosition = field.WorldToGridPosition(localHitPosition);
+			return field.GetTile(gridPosition);
+		}
+
+		private static IInteractable FindInteractableInHierarchy(Node node)
+		{
+			for (Node current = node; current != null; current = current.GetParent())
+			{
+				if (current is IInteractable interactable)
+					return interactable;
+			}
+
+			return null;
+		}
+
+		private bool IsFieldCollision(Node node)
+		{
+			return field != null && (node == field || field.IsAncestorOf(node));
 		}
 	}
 }

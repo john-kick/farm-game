@@ -1,8 +1,9 @@
+using FarmGame.Scripts.Controls;
 using Godot;
 
 namespace FarmGame.Scripts.Tiles
 {
-	public abstract partial class Tile : Node3D
+	public abstract partial class Tile : Node3D, IInteractable
 	{
 		/// <summary>
 		/// The type of this tile
@@ -74,5 +75,10 @@ namespace FarmGame.Scripts.Tiles
 			surfaceTool.SetUV(new Vector2(0, 1));
 			surfaceTool.AddVertex(d);
 		}
-	}
+
+        public virtual void OnInteract()
+        {
+            // No default behavior
+        }
+    }
 }
