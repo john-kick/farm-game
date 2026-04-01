@@ -1,35 +1,57 @@
 using Godot;
 using FarmGame.Scripts.UI;
-using Godot.Collections;
 using FarmGame.Scripts.Tiles;
+using Godot.Collections;
+using FarmGame.Scripts.Environment;
 
 namespace FarmGame.Scripts
 {
 	public partial class Main : Node3D
 	{
-		[Export] public Vector2I Size;
-		[Export] public Mesh.PrimitiveType PrimitiveType = Mesh.PrimitiveType.Triangles;
+		[Export] public float LookingAtDistance = 5.0f;
+		[Export] public bool ShowHitIndicator = false;
 
-		private Field Field;
 		private Camera3D camera;
-		private TileIndicator tileIndicator;
+		private Field field;
 		private Debug debugPanel;
+		private TileIndicator tileIndicator;
+		private MeshInstance3D hitIndicator;
 
 		public override void _Ready()
 		{
 			Engine.MaxFps = 0;
 			camera = GetNode<Camera3D>("Player/Camera");
-			tileIndicator = (TileIndicator)GetNode<Node3D>("TileIndicator");
+			field = GetNode<Field>("Field");
 			debugPanel = (Debug)GetNode<CanvasLayer>("DebugUI");
 
-			Field = new Field(Size, PrimitiveType);
-			AddChild(Field);
+			tileIndicator = new TileIndicator
+			{
+				Mesh = new PlaneMesh() { Size = new Vector2(field.TileSize, field.TileSize) },
+				MaterialOverride = new ShaderMaterial() { Shader = GD.Load<Shader>("res://Shaders/tile_indicator.gdshader") }
+			};
+			AddChild(tileIndicator);
+
+			if (ShowHitIndicator)
+			{
+				hitIndicator = new MeshInstance3D()
+				{
+					Mesh = new BoxMesh()
+					{
+						Size = Vector3.One * 0.1f
+					},
+					MaterialOverride = new StandardMaterial3D()
+					{
+						AlbedoColor = Colors.Red
+					}
+				};
+				AddChild(hitIndicator);
+			}
 		}
 
 		public override void _Process(double delta)
 		{
 			CheckInput();
-			CheckCollision();
+			LookingAt();
 		}
 
 		private void CheckInput()
@@ -38,61 +60,50 @@ namespace FarmGame.Scripts
 			{
 				debugPanel.Visible = !debugPanel.Visible;
 			}
-
 		}
 
-		private void CheckCollision()
+		private void LookingAt()
 		{
-			var spaceState = GetWorld3D().DirectSpaceState;
+			if (camera == null || field == null)
+			{
+				tileIndicator.Hide();
+				return;
+			}
 
+			PhysicsDirectSpaceState3D spaceState = GetWorld3D().DirectSpaceState;
 			Vector2 center = GetViewport().GetVisibleRect().Size / 2;
-
 			Vector3 from = camera.ProjectRayOrigin(center);
 			Vector3 dir = camera.ProjectRayNormal(center);
-			Vector3 to = from + dir * 5f;
+			Vector3 to = from + dir * LookingAtDistance;
 
 			var query = PhysicsRayQueryParameters3D.Create(from, to);
-			Dictionary collisions = spaceState.IntersectRay(query);
+			query.CollideWithAreas = false;
+			query.CollideWithBodies = true;
 
-			if (collisions.Count > 0)
-			{
-				HandleCollision(collisions);
-			}
-			else
+			Dictionary hit = spaceState.IntersectRay(query);
+			if (hit.Count == 0 || !hit.TryGetValue("position", out Variant hitPositionVariant))
 			{
 				tileIndicator.Hide();
-			}
-		}
 
-		private void HandleCollision(Dictionary collisions)
-		{
-			GodotObject collider = (GodotObject)collisions["collider"];
+				hitIndicator?.Hide();
 
-			if (collider is Tile tile)
-			{
-				tileIndicator.SetTargetTile(tile);			
-				tileIndicator.Show();			
-				if (Input.IsActionJustPressed("ui_primary_action"))
-				{
+				return;
+			}
 
-					if (tile.GetTileType() == TileType.GRASS)
-					{
-						Field.ReplaceTile(tile, TileType.DIRT);
-					}
-					else if (tile.GetTileType() == TileType.DIRT)
-					{
-						Field.ReplaceTile(tile, TileType.STONE);
-					}
-					else if (tile.GetTileType() == TileType.STONE)
-					{
-						Field.ReplaceTile(tile, TileType.GRASS);
-					}
-				}
-			}
-			else
-			{
-				tileIndicator.Hide();
-			}
+			tileIndicator.Show();
+			hitIndicator?.Show();
+
+			Vector3 hitPosition = hitPositionVariant.AsVector3();
+			if (hitIndicator != null)
+				hitIndicator.Position = hitPosition;
+
+			Vector3 localHitPosition = field.ToLocal(hitPosition);
+			Vector2I gridPosition = field.WorldToGridPosition(localHitPosition);
+			Tile hoveredTile = field.GetTile(gridPosition);
+			float tileTop = hoveredTile != null ? hoveredTile.Height : 0f;
+			Vector3 TileIndicatorPosition = field.ToGlobal(field.GridToWorldPosition(gridPosition) + new Vector3(0, tileTop + 0.1f, 0));
+			tileIndicator.SetTargetPosition(TileIndicatorPosition);
+			debugPanel.LookingAt(hoveredTile);
 		}
 	}
 }

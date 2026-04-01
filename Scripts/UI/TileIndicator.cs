@@ -3,30 +3,26 @@ using Godot;
 
 namespace FarmGame.Scripts.UI
 {
-
-    public partial class TileIndicator : Node3D
+    public partial class TileIndicator : MeshInstance3D
     {
-        [Export(PropertyHint.Range, "0, 0.1, 0.01")]
-        public float LerpStrength = 0.01f;
+        [Export] public float LerpWeight = 0.02f;
+
         private Vector3 targetPosition;
+
 
         public override void _Ready()
         {
-            targetPosition = new Vector3(0,0,0);   
+            Visible = false;
         }
 
         public override void _Process(double delta)
         {
-            GlobalPosition = GlobalPosition.Lerp(targetPosition, LerpStrength);
+            Position = GlobalPosition.Lerp(targetPosition, LerpWeight);
         }
 
-        public void SetTargetTile(Tile tile)
+        public void SetTargetPosition(Vector3 position)
         {
-            targetPosition = new(
-                tile.GridPosition.X + 0.5f,
-                tile.GetHeight() + 0.1f,
-                tile.GridPosition.Y + 0.5f
-            );
+            targetPosition = position;
         }
     }
 }

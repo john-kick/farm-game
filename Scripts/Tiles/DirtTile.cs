@@ -2,29 +2,12 @@ using Godot;
 
 namespace FarmGame.Scripts.Tiles
 {
-    public partial class DirtTile : Tile
-    {
-        public override Material GetMaterial()
-        {
-            return new StandardMaterial3D()
-            {
-                AlbedoColor = Colors.SandyBrown
-            };
-        }
+	public partial class DirtTile : Tile
+	{
+		[Export] public Color DirtColor = new(0.6f, 0.4f, 0.2f);
 
-        public static new PackedScene GetScene()
-        {
-            return GD.Load<PackedScene>("res://Scenes/Tiles/dirt_tile.tscn");
-        }
-
-        public override float GetHeight()
-        {
-            return 0.9f;
-        }
-
-        public override TileType GetTileType()
-        {
-            return TileType.DIRT;
-        }
-    }
+		public override TileType TileType => TileType.Dirt;
+		public override float Height => 0.85f;
+		public override Material Material => new StandardMaterial3D() { AlbedoColor = DirtColor };
+	}
 }

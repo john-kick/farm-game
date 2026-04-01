@@ -1,42 +1,20 @@
-using System;
-using System.Linq;
-using Godot;
-
 namespace FarmGame.Scripts.Tiles
 {
-	public enum TileType
+	public static class TileFactory
 	{
-		GRASS,
-		STONE,
-		DIRT,
-		EDGE,
-		BASE
-	}
-
-	public class TileFactory()
-	{
-		public static Tile GetTile(TileType type)
+		/// <summary>
+		/// Create a tile of the specified type
+		/// </summary>
+		public static Tile CreateTile(TileType type)
 		{
-			PackedScene scene = type switch
+			return type switch
 			{
-				TileType.GRASS => GrassTile.GetScene(),
-				TileType.STONE => StoneTile.GetScene(),
-				TileType.DIRT => DirtTile.GetScene(),
-				TileType.BASE => BaseTile.GetScene(),
-				TileType.EDGE => EdgeTile.GetScene(),
-				_ => throw new Exception($"Unknown tile type '{type}'"),
+				TileType.Grass => new GrassTile(),
+				TileType.Dirt => new DirtTile(),
+				TileType.Stone => new StoneTile(),
+				TileType.Edge => new EdgeTile(),
+				_ => new GrassTile()
 			};
-			Tile tile = scene.Instantiate<Tile>();
-			return tile;
-		}
-
-		public static Tile GetRandomTile()
-		{
-			Random random = new();
-			TileType[] tileTypes = [.. Enum.GetValues<TileType>().Where(t => t != TileType.BASE)];
-
-			TileType type = tileTypes[random.Next(tileTypes.Length)];
-			return GetTile(type);
 		}
 	}
 }

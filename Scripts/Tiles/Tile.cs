@@ -1,206 +1,78 @@
-using System;
-using System.Collections.Generic;
 using Godot;
 
 namespace FarmGame.Scripts.Tiles
 {
-	public abstract partial class Tile : StaticBody3D
+	public abstract partial class Tile : Node3D
 	{
-		[Export] public Vector2I GridPosition;
-
-		protected MeshInstance3D meshInstance;
-		protected CollisionShape3D collisionShape;
-
-		public Tile()
-		{ }
-
-		public Tile(Vector2I gridPosition)
-		{
-			GridPosition = gridPosition;
-		}
-
-		public override void _Ready()
-		{
-			meshInstance = GetNode<MeshInstance3D>("Mesh");
-			collisionShape = GetNode<CollisionShape3D>("CollisionShape");
-		}
-
-		private void ApplyMaterial()
-		{
-			meshInstance.MaterialOverride = GetMaterial();
-		}
-
-		public void Render(
-			Neighbor<Tile>[] neighbors,
-			Mesh.PrimitiveType primitiveType = Mesh.PrimitiveType.Triangles
-		) {
-			ArrayMesh mesh = new();
-
-			List<Vector3> vertices = [];
-			List<Vector3> normals = [];
-			List<Vector2> uvs = [];
-			List<int> indices = [];
-
-			AddTopQuad(vertices, normals, uvs, indices);
-			FillGapsBetweenTiles(vertices, normals, uvs, indices, neighbors);
-
-			Godot.Collections.Array arrays = [];
-			arrays.Resize((int)Mesh.ArrayType.Max);
-			arrays[(int)Mesh.ArrayType.Vertex] = vertices.ToArray();
-			arrays[(int)Mesh.ArrayType.Normal] = normals.ToArray();
-			arrays[(int)Mesh.ArrayType.TexUV] = uvs.ToArray();
-			arrays[(int)Mesh.ArrayType.Index] = indices.ToArray();
-
-			mesh.AddSurfaceFromArrays(primitiveType, arrays);
-			meshInstance.Mesh = mesh;
-			GenerateCollisionShape();
-			ApplyMaterial();
-		}
-
-		private void AddTopQuad(
-			List<Vector3> vertices,
-			List<Vector3> normals,
-			List<Vector2> uvs,
-			List<int> indices
-		)
-		{
-			float height = GetHeight();
-
-			int start = vertices.Count;
-			
-			vertices.Add(new Vector3(0 + GridPosition.X, height, 0 + GridPosition.Y));
-			vertices.Add(new Vector3(0 + GridPosition.X, height, 1 + GridPosition.Y));
-			vertices.Add(new Vector3(1 + GridPosition.X, height, 0 + GridPosition.Y));
-			vertices.Add(new Vector3(1 + GridPosition.X, height, 1 + GridPosition.Y));
-
-			normals.Add(Vector3.Up);			
-			normals.Add(Vector3.Up);			
-			normals.Add(Vector3.Up);			
-			normals.Add(Vector3.Up);
-
-			uvs.Add(Vector2.Zero);			
-			uvs.Add(Vector2.Zero);			
-			uvs.Add(Vector2.Zero);			
-			uvs.Add(Vector2.Zero);
-
-			indices.Add(start + 0);
-			indices.Add(start + 3);
-			indices.Add(start + 1);
-
-			indices.Add(start + 0);
-			indices.Add(start + 2);
-			indices.Add(start + 3);
-		}
+		/// <summary>
+		/// The type of this tile
+		/// </summary>
+		public abstract TileType TileType { get; }
 
 		/// <summary>
-		/// Fills the gaps between tiles with quads. The new quad will have the same color as the higher tile.
+		/// The height of this tile
 		/// </summary>
-		private void FillGapsBetweenTiles(
-			List<Vector3> vertices,
-			List<Vector3> normals,
-			List<Vector2> uvs,
-			List<int> indices,
-			Neighbor<Tile>[] neighbors
-		)
+		public abstract float Height { get; }
+
+		/// <summary>
+		/// The material for this tile
+		/// </summary>
+		public abstract Material Material { get; }
+
+		public Material MaterialOverride;
+
+		/// <summary>
+		/// Grid position of this tile
+		/// </summary>
+		[Export] public Vector2I GridPosition { get; set; }
+
+		public ArrayMesh CreateMesh(float TileSize)
 		{
+			float halfSize = TileSize / 2f;
+			SurfaceTool surfaceTool = new();
+			surfaceTool.Begin(Mesh.PrimitiveType.Triangles);
+			Material material = MaterialOverride ?? Material;
+			surfaceTool.SetMaterial(material);
 
-			foreach (Neighbor<Tile> neighbor in neighbors)
-			{
-				if (neighbor.Element == null)
-					continue;
+			Vector3 bottomFrontLeft = new(-halfSize, 0, -halfSize);
+			Vector3 bottomFrontRight = new(halfSize, 0, -halfSize);
+			Vector3 bottomBackRight = new(halfSize, 0, halfSize);
+			Vector3 bottomBackLeft = new(-halfSize, 0, halfSize);
+			Vector3 topFrontLeft = new(-halfSize, Height, -halfSize);
+			Vector3 topFrontRight = new(halfSize, Height, -halfSize);
+			Vector3 topBackRight = new(halfSize, Height, halfSize);
+			Vector3 topBackLeft = new(-halfSize, Height, halfSize);
 
-				float h = GetHeight();
-				float nh = neighbor.Element.GetHeight();
+			AddQuad(surfaceTool, topFrontLeft, topFrontRight, topBackRight, topBackLeft, Vector3.Up);
+			AddQuad(surfaceTool, bottomFrontLeft, bottomFrontRight, topFrontRight, topFrontLeft, Vector3.Forward);
+			AddQuad(surfaceTool, bottomBackRight, bottomBackLeft, topBackLeft, topBackRight, Vector3.Back);
+			AddQuad(surfaceTool, bottomBackLeft, bottomFrontLeft, topFrontLeft, topBackLeft, Vector3.Left);
+			AddQuad(surfaceTool, bottomFrontRight, bottomBackRight, topBackRight, topFrontRight, Vector3.Right);
 
-				if (h <= nh)
-					continue;
-
-				int ox = neighbor.Offset.X;
-				int oz = neighbor.Offset.Y;
-
-				Vector3 v0, v1, v2, v3, normal;
-
-				if (ox == 1) // right
-				{
-					v0 = new Vector3(GridPosition.X + 1, h, GridPosition.Y);
-					v1 = new Vector3(GridPosition.X + 1, h, GridPosition.Y + 1);
-					v2 = new Vector3(GridPosition.X + 1, nh, GridPosition.Y);
-					v3 = new Vector3(GridPosition.X + 1, nh, GridPosition.Y + 1);
-					normal = new Vector3(1, 0, 0);
-				}
-				else if (ox == -1) // left
-				{
-					v0 = new Vector3(GridPosition.X, h, GridPosition.Y + 1);
-					v1 = new Vector3(GridPosition.X, h, GridPosition.Y);
-					v2 = new Vector3(GridPosition.X, nh, GridPosition.Y + 1);
-					v3 = new Vector3(GridPosition.X, nh, GridPosition.Y);
-					normal = new Vector3(-1, 0, 0);
-				}
-				else if (oz == 1) // bottom
-				{
-					v0 = new Vector3(GridPosition.X + 1, h, GridPosition.Y + 1);
-					v1 = new Vector3(GridPosition.X, h, GridPosition.Y + 1);
-					v2 = new Vector3(GridPosition.X + 1, nh, GridPosition.Y + 1);
-					v3 = new Vector3(GridPosition.X, nh, GridPosition.Y + 1);
-					normal = new Vector3(0, 0, 1);
-				}
-				else // top (oz == -1)
-				{
-					v0 = new Vector3(GridPosition.X, h, GridPosition.Y);
-					v1 = new Vector3(GridPosition.X + 1, h, GridPosition.Y);
-					v2 = new Vector3(GridPosition.X, nh, GridPosition.Y);
-					v3 = new Vector3(GridPosition.X + 1, nh, GridPosition.Y);
-					normal = new Vector3(0, 0, -1);
-				}
-
-				int start = vertices.Count;
-
-				vertices.Add(v0);
-				vertices.Add(v1);
-				vertices.Add(v2);
-				vertices.Add(v3);
-
-				normals.Add(normal);
-				normals.Add(normal);
-				normals.Add(normal);
-				normals.Add(normal);
-
-				uvs.Add(Vector2.Zero);
-				uvs.Add(Vector2.Zero);
-				uvs.Add(Vector2.Zero);
-				uvs.Add(Vector2.Zero);
-
-				indices.Add(start + 0);
-				indices.Add(start + 3);
-				indices.Add(start + 1);
-
-				indices.Add(start + 0);
-				indices.Add(start + 2);
-				indices.Add(start + 3);
-			}
+			return surfaceTool.Commit();
 		}
 
-		private void GenerateCollisionShape()
+		private static void AddQuad(SurfaceTool surfaceTool, Vector3 a, Vector3 b, Vector3 c, Vector3 d, Vector3 normal)
 		{
-			collisionShape.Shape = meshInstance.Mesh.CreateTrimeshShape();
-		}
+			surfaceTool.SetNormal(normal);
+			surfaceTool.SetUV(new Vector2(0, 0));
+			surfaceTool.AddVertex(a);
+			surfaceTool.SetNormal(normal);
+			surfaceTool.SetUV(new Vector2(1, 0));
+			surfaceTool.AddVertex(b);
+			surfaceTool.SetNormal(normal);
+			surfaceTool.SetUV(new Vector2(1, 1));
+			surfaceTool.AddVertex(c);
 
-		public static PackedScene GetScene()
-		{
-			throw new Exception("Called from base class");
+			surfaceTool.SetNormal(normal);
+			surfaceTool.SetUV(new Vector2(0, 0));
+			surfaceTool.AddVertex(a);
+			surfaceTool.SetNormal(normal);
+			surfaceTool.SetUV(new Vector2(1, 1));
+			surfaceTool.AddVertex(c);
+			surfaceTool.SetNormal(normal);
+			surfaceTool.SetUV(new Vector2(0, 1));
+			surfaceTool.AddVertex(d);
 		}
-
-		public virtual void HandleClick()
-		{
-			// Do nothing
-		}
-
-		public virtual float GetHeight()
-		{
-			return 1;
-		}
-
-		public abstract Material GetMaterial();
-		public abstract TileType GetTileType();
 	}
 }

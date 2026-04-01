@@ -4,22 +4,10 @@ namespace FarmGame.Scripts.Tiles
 {
 	public partial class StoneTile : Tile
 	{
-		public override Material GetMaterial()
-		{
-			return new StandardMaterial3D()
-			{
-				AlbedoColor = Colors.SlateGray
-			};
-		}
+		[Export] public Color StoneColor = new(0.5f, 0.5f, 0.5f);
 
-		public static new PackedScene GetScene()
-		{
-			return GD.Load<PackedScene>("res://Scenes/Tiles/stone_tile.tscn");
-		}
-
-		public override TileType GetTileType()
-		{
-			return TileType.STONE;
-		}
+		public override TileType TileType => TileType.Stone;
+		public override float Height => 0.9f;
+		public override Material Material => new StandardMaterial3D() { AlbedoColor = StoneColor };
 	}
 }

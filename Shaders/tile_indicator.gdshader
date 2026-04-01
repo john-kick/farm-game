@@ -1,4 +1,5 @@
 shader_type spatial;
+render_mode blend_mix, unshaded, cull_disabled;
 
 void fragment() {
 	float x = UV.x;

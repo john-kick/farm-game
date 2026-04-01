@@ -4,27 +4,10 @@ namespace FarmGame.Scripts.Tiles
 {
 	public partial class GrassTile : Tile
 	{
-		public override Material GetMaterial()
-		{
-			return new StandardMaterial3D()
-			{
-				AlbedoColor = Colors.Green
-			};
-		}
+		[Export] public Color GrassColor = new(0.2f, 0.8f, 0.2f);
 
-		public static new PackedScene GetScene()
-		{
-			return GD.Load<PackedScene>("res://Scenes/Tiles/grass_tile.tscn");
-		}
-
-        public override void HandleClick()
-        {
-            
-        }
-
-		public override TileType GetTileType()
-		{
-			return TileType.GRASS;
-		}
+		public override TileType TileType => TileType.Grass;
+		public override float Height => 0.95f;
+		public override Material Material => new StandardMaterial3D() { AlbedoColor = GrassColor };
 	}
 }

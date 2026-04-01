@@ -4,28 +4,10 @@ namespace FarmGame.Scripts.Tiles
 {
     public partial class EdgeTile : Tile
     {
-        public override Material GetMaterial()
-        {
-            return new StandardMaterial3D()
-            {
-                AlbedoColor = Colors.Black
-            };
-        }
+        [Export] public Color EdgeColor = new(0.13f, 0.52f, 0.13f);
 
-        public override TileType GetTileType()
-        {
-            return TileType.EDGE;
-        }
-
-        public override float GetHeight()
-        {
-            return 1.1f;
-        }
-
-        public static new PackedScene GetScene()
-        {
-            return GD.Load<PackedScene>("res://Scenes/Tiles/edge_tile.tscn");
-        }
-
+        public override TileType TileType => TileType.Edge;
+        public override float Height => 1.0f;
+        public override Material Material => new StandardMaterial3D() { AlbedoColor = EdgeColor };
     }
 }
