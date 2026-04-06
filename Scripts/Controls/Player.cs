@@ -154,11 +154,13 @@ namespace FarmGame.Scripts.Controls
 				_ => null
 			};
 
+			interaction.Process();
+
 			if (interaction is ReplaceTileInteraction replaceTileInteraction)
 			{
 				Vector3 localHitPosition = field.ToLocal(hitPosition);
 				Vector2I gridPosition = field.WorldToGridPosition(localHitPosition);
-				Tile newTile = TileFactory.CreateTile(replaceTileInteraction.NewTileType, field);
+				Tile newTile = TileFactory.CreateTile(replaceTileInteraction.NewTileType);
 				field.AddTile(gridPosition, newTile);
 				field.Refresh();
 			}

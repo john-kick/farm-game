@@ -45,7 +45,7 @@ namespace FarmGame.Scripts.Environment
 				for (int y = 0; y < Height; y++)
 				{
 					Vector2I gridPos = new(x, y);
-					Tile tile = TileFactory.CreateTile(tileType, this);
+					Tile tile = TileFactory.CreateTile(tileType);
 					tile.GridPosition = gridPos;
 					AddTile(gridPos, tile);
 				}
@@ -63,7 +63,7 @@ namespace FarmGame.Scripts.Environment
 				{
 					Vector2I gridPos = new(x, y);
 					TileType tileType = (TileType)(random.Randi() % 3);
-					Tile tile = TileFactory.CreateTile(tileType, this);
+					Tile tile = TileFactory.CreateTile(tileType);
 					tile.GridPosition = gridPos;
 					AddTile(gridPos, tile);
 				}
@@ -112,7 +112,7 @@ namespace FarmGame.Scripts.Environment
 
 		private void AddEdgeTile(Vector2I pos)
 		{
-			Tile tile = TileFactory.CreateTile(TileType.Edge, this);
+			Tile tile = TileFactory.CreateTile(TileType.Edge);
 			tile.GridPosition = pos;
 			AddTile(pos, tile);
 		}
@@ -127,6 +127,7 @@ namespace FarmGame.Scripts.Environment
 			
 			tile.GridPosition = gridPos;
 			tiles[gridPos] = tile;
+			tile.Field = this;
 		}
 
 		/// <summary>
@@ -134,7 +135,12 @@ namespace FarmGame.Scripts.Environment
 		/// </summary>
 		public void RemoveTile(Vector2I gridPos)
 		{
+			Tile tile = GetTile(gridPos);
+			if (tile == null)
+				return;
+
 			tiles.Remove(gridPos);
+			tile.Field = null;
 		}
 
 		/// <summary>
