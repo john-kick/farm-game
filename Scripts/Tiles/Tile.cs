@@ -79,6 +79,11 @@ namespace FarmGame.Scripts.Tiles
 			surfaceTool.AddVertex(d);
 		}
 
+		protected ReplaceTileInteraction CreateReplaceTileInteraction(TileType newTileType)
+		{
+			return new ReplaceTileInteraction(newTileType, Field, GridPosition);
+		}
+
 		public virtual Interaction PrimaryInteraction() => new NoInteraction();
 		public virtual Interaction SecondaryInteraction() => new NoInteraction();
 		public virtual Interaction TertiaryInteraction() => new NoInteraction();
