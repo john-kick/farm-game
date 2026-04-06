@@ -67,3 +67,7 @@ Shaders/                         # .gdshader files (tile_indicator, debug_shader
 - New tile types require: a new `TileType` enum value, a concrete `Tile` subclass, and a `TileFactory` case.
 - New interactions require: a subclass of `Interaction`, handling in `Player.HandleInteraction()`, and the relevant `IInteractable` override on the target tile.
 - `Tile.MaterialOverride` (set at runtime) takes precedence over `Tile.Material` (defined per subclass) when building the mesh.
+
+## Other
+
+- Keep this CLAUDE.md file up-to-date with changes, if relevant.
