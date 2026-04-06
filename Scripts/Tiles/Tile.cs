@@ -1,9 +1,10 @@
 using FarmGame.Scripts.Controls.Interactions;
+using FarmGame.Scripts.Environment;
 using Godot;
 
 namespace FarmGame.Scripts.Tiles
 {
-	public abstract partial class Tile : Node3D, IInteractable
+	public abstract partial class Tile(Field field = null) : Node3D, IInteractable
 	{
 		/// <summary>
 		/// The type of this tile
@@ -20,20 +21,22 @@ namespace FarmGame.Scripts.Tiles
 		/// </summary>
 		public abstract Material Material { get; }
 
-		public Material MaterialOverride;
+		/// <summary>
+		/// Reference to the Field this tile is on, if any
+		/// </summary>
+		public Field Field = field;
 
 		/// <summary>
 		/// Grid position of this tile
 		/// </summary>
 		[Export] public Vector2I GridPosition { get; set; }
 
-		public ArrayMesh CreateMesh(float TileSize)
+        public ArrayMesh CreateMesh(float TileSize)
 		{
 			float halfSize = TileSize / 2f;
 			SurfaceTool surfaceTool = new();
 			surfaceTool.Begin(Mesh.PrimitiveType.Triangles);
-			Material material = MaterialOverride ?? Material;
-			surfaceTool.SetMaterial(material);
+			surfaceTool.SetMaterial(Material);
 
 			Vector3 bottomFrontLeft = new(-halfSize, 0, -halfSize);
 			Vector3 bottomFrontRight = new(halfSize, 0, -halfSize);

@@ -158,7 +158,7 @@ namespace FarmGame.Scripts.Controls
 			{
 				Vector3 localHitPosition = field.ToLocal(hitPosition);
 				Vector2I gridPosition = field.WorldToGridPosition(localHitPosition);
-				Tile newTile = TileFactory.CreateTile(replaceTileInteraction.NewTileType);
+				Tile newTile = TileFactory.CreateTile(replaceTileInteraction.NewTileType, field);
 				field.AddTile(gridPosition, newTile);
 				field.Refresh();
 			}

@@ -84,9 +84,7 @@ namespace FarmGame.Scripts
 			if (hit.Count == 0 || !hit.TryGetValue("position", out Variant hitPositionVariant))
 			{
 				tileIndicator.Hide();
-
 				hitIndicator?.Hide();
-
 				return;
 			}
 

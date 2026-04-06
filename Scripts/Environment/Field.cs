@@ -45,7 +45,7 @@ namespace FarmGame.Scripts.Environment
 				for (int y = 0; y < Height; y++)
 				{
 					Vector2I gridPos = new(x, y);
-					Tile tile = TileFactory.CreateTile(tileType);
+					Tile tile = TileFactory.CreateTile(tileType, this);
 					tile.GridPosition = gridPos;
 					AddTile(gridPos, tile);
 				}
@@ -63,7 +63,7 @@ namespace FarmGame.Scripts.Environment
 				{
 					Vector2I gridPos = new(x, y);
 					TileType tileType = (TileType)(random.Randi() % 3);
-					Tile tile = TileFactory.CreateTile(tileType);
+					Tile tile = TileFactory.CreateTile(tileType, this);
 					tile.GridPosition = gridPos;
 					AddTile(gridPos, tile);
 				}
@@ -112,7 +112,7 @@ namespace FarmGame.Scripts.Environment
 
 		private void AddEdgeTile(Vector2I pos)
 		{
-			Tile tile = TileFactory.CreateTile(TileType.Edge);
+			Tile tile = TileFactory.CreateTile(TileType.Edge, this);
 			tile.GridPosition = pos;
 			AddTile(pos, tile);
 		}
