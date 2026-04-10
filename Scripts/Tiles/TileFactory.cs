@@ -1,3 +1,5 @@
+using FarmGame.Scripts.Environment;
+
 namespace FarmGame.Scripts.Tiles
 {
 	public static class TileFactory
@@ -13,7 +15,7 @@ namespace FarmGame.Scripts.Tiles
 				TileType.Dirt => new DirtTile(),
 				TileType.Stone => new StoneTile(),
 				TileType.Edge => new EdgeTile(),
-				_ => new GrassTile()
+				_ => throw new System.Exception($"Unsupported tile type: {type}")
 			};
 		}
 	}

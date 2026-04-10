@@ -1,8 +1,9 @@
+using FarmGame.Scripts.Environment;
 using Godot;
 
 namespace FarmGame.Scripts.Tiles
 {
-    public partial class EdgeTile : Tile
+    public partial class EdgeTile(Field field = null) : Tile(field)
     {
         [Export] public Color EdgeColor = new(0.13f, 0.52f, 0.13f);
 

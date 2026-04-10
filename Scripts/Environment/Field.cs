@@ -127,6 +127,7 @@ namespace FarmGame.Scripts.Environment
 			
 			tile.GridPosition = gridPos;
 			tiles[gridPos] = tile;
+			tile.Field = this;
 		}
 
 		/// <summary>
@@ -134,7 +135,12 @@ namespace FarmGame.Scripts.Environment
 		/// </summary>
 		public void RemoveTile(Vector2I gridPos)
 		{
+			Tile tile = GetTile(gridPos);
+			if (tile == null)
+				return;
+
 			tiles.Remove(gridPos);
+			tile.Field = null;
 		}
 
 		/// <summary>
@@ -181,6 +187,12 @@ namespace FarmGame.Scripts.Environment
 		{
 			return gridPos.X >= 0 && gridPos.X < Width &&
 				   gridPos.Y >= 0 && gridPos.Y < Height;
+		}
+
+		public void Refresh()
+		{
+			fieldRenderer?.Clear();
+			RenderTiles();
 		}
 
 		private void RenderTiles() => fieldRenderer?.RenderTiles(tiles.Values, TileSize);
