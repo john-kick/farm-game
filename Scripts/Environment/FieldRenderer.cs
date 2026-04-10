@@ -7,10 +7,9 @@ namespace FarmGame.Scripts.Environment
 {
 	public class FieldRenderer
 	{
-		private const string TerrainCollisionName = "TerrainCollision";
-
 		private readonly Node3D fieldNode;
 		private readonly Dictionary<TileType, MultiMeshInstance3D> tileRenderers = [];
+		private StaticBody3D terrainBody;
 
 		public FieldRenderer(Node3D fieldNode)
 		{
@@ -19,13 +18,16 @@ namespace FarmGame.Scripts.Environment
 
 		public void RenderTiles(IEnumerable<Tile> tiles, float tileSize)
 		{
-			StaticBody3D body = new() { Name = TerrainCollisionName };
+			if (terrainBody == null)
+			{
+				terrainBody = new StaticBody3D();
+				fieldNode.AddChild(terrainBody);
+			}
+
 			List<IGrouping<TileType, Tile>> groupedTiles = [.. tiles.GroupBy(t => t.TileType)];
 
 			foreach (IGrouping<TileType, Tile> group in groupedTiles)
-				RenderTileGroup(group, body, tileSize);
-
-			fieldNode.AddChild(body);
+				RenderTileGroup(group, terrainBody, tileSize);
 		}
 
 		public void Clear()
@@ -34,7 +36,12 @@ namespace FarmGame.Scripts.Environment
 				renderer.QueueFree();
 
 			tileRenderers.Clear();
-			fieldNode.GetNodeOrNull<StaticBody3D>(TerrainCollisionName)?.QueueFree();
+
+			if (terrainBody != null)
+			{
+				foreach (Node child in terrainBody.GetChildren())
+					child.QueueFree();
+			}
 		}
 
 		private void RenderTileGroup(IGrouping<TileType, Tile> group, StaticBody3D body, float tileSize)

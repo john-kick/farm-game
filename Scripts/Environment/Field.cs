@@ -36,6 +36,7 @@ namespace FarmGame.Scripts.Environment
 
 			CreateEdgeTiles();
 			RenderTiles();
+			RenderFences();
 		}
 
 		private void CreateUniformField(TileType tileType)
@@ -112,6 +113,7 @@ namespace FarmGame.Scripts.Environment
 
 		private void AddEdgeTile(Vector2I pos)
 		{
+			// Add the tile itself
 			Tile tile = TileFactory.CreateTile(TileType.Edge);
 			tile.GridPosition = pos;
 			AddTile(pos, tile);
@@ -124,7 +126,7 @@ namespace FarmGame.Scripts.Environment
 		{
 			if (tiles.ContainsKey(gridPos))
 				RemoveTile(gridPos);
-			
+
 			tile.GridPosition = gridPos;
 			tiles[gridPos] = tile;
 			tile.Field = this;
@@ -196,5 +198,33 @@ namespace FarmGame.Scripts.Environment
 		}
 
 		private void RenderTiles() => fieldRenderer?.RenderTiles(tiles.Values, TileSize);
+
+		private void RenderFences()
+		{
+			foreach (Tile tile in tiles.Values)
+			{
+				if (tile.TileType != TileType.Edge)
+					continue;
+
+				Node3D fence = GD.Load<PackedScene>("res://Scenes/fence.tscn").Instantiate<Node3D>();
+				AddChild(fence);
+				fence.Position = GridToWorldPosition(tile.GridPosition) + Vector3.Up * 1.5f;
+
+				// Add collision
+				StaticBody3D collisionBody = new();
+				CollisionShape3D collisionShape = new()
+				{
+					Shape = new BoxShape3D()
+					{
+						Size = new Vector3(TileSize / 2, 1.5f, TileSize / 2)
+					}
+				};
+				collisionBody.AddChild(collisionShape);
+				fence.AddChild(collisionBody);
+				collisionBody.Position = Vector3.Zero;
+				collisionBody.CollisionLayer = 1; // Set to appropriate layer for player collision
+				collisionBody.CollisionMask = 1; // Set to appropriate mask for player collision
+			}
+		}
 	}
 }
