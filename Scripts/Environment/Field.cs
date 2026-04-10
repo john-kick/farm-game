@@ -1,6 +1,7 @@
 using FarmGame.Scripts.Tiles;
 using Godot;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace FarmGame.Scripts.Environment
 {
@@ -13,10 +14,12 @@ namespace FarmGame.Scripts.Environment
 
 		private readonly Dictionary<Vector2I, Tile> tiles = [];
 		private FieldRenderer fieldRenderer;
+		private FenceRenderer fenceRenderer;
 
 		public override void _Ready()
 		{
 			fieldRenderer = new FieldRenderer(this);
+			fenceRenderer = new FenceRenderer(this);
 			InitializeField(TileSize);
 		}
 
@@ -36,6 +39,7 @@ namespace FarmGame.Scripts.Environment
 
 			CreateEdgeTiles();
 			RenderTiles();
+			RenderFences();
 		}
 
 		private void CreateUniformField(TileType tileType)
@@ -172,6 +176,7 @@ namespace FarmGame.Scripts.Environment
 		{
 			tiles.Clear();
 			fieldRenderer?.Clear();
+			fenceRenderer?.Clear();
 		}
 
 		/// <summary>
@@ -184,5 +189,7 @@ namespace FarmGame.Scripts.Environment
 		}
 
 		private void RenderTiles() => fieldRenderer?.RenderTiles(tiles.Values, TileSize);
+
+		private void RenderFences() => fenceRenderer?.RenderFences(tiles.Values, TileSize);
 	}
 }
