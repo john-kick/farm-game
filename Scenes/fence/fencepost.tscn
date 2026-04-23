@@ -1,0 +1,46 @@
+[gd_scene format=3 uid="uid://bttvgy13ft8lh"]
+
+[ext_resource type="Script" uid="uid://bg41d44mhcasb" path="res://Scripts/Fences/Fence.cs" id="1_t01y0"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ehocp"]
+albedo_color = Color(0.48, 0.264, 0, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_3hrd4"]
+material = SubResource("StandardMaterial3D_ehocp")
+size = Vector3(0.15, 1, 0.15)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_81seu"]
+albedo_color = Color(0.64, 0.4215467, 0.23040001, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_j17s3"]
+material = SubResource("StandardMaterial3D_81seu")
+size = Vector3(0.2, 0.2, 0.2)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ib8bx"]
+albedo_color = Color(0.6392157, 0.41960785, 0.23137255, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_34wpg"]
+material = SubResource("StandardMaterial3D_ib8bx")
+size = Vector3(0.2, 0.2, 0.2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ib8bx"]
+size = Vector3(0.2, 2, 0.2)
+
+[node name="Fence" type="Node3D" unique_id=1856576346]
+script = ExtResource("1_t01y0")
+
+[node name="Post" type="MeshInstance3D" parent="." unique_id=2094689093]
+mesh = SubResource("BoxMesh_3hrd4")
+
+[node name="Knob1" type="MeshInstance3D" parent="." unique_id=491147002]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.30724943, 0)
+mesh = SubResource("BoxMesh_j17s3")
+
+[node name="Knob2" type="MeshInstance3D" parent="." unique_id=887705224]
+mesh = SubResource("BoxMesh_34wpg")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="." unique_id=1614928206]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D" unique_id=1017645354]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+shape = SubResource("BoxShape3D_ib8bx")

@@ -4,5 +4,5 @@
 
 [node name="Field" type="Node3D" unique_id=32322520]
 script = ExtResource("1_0j7qm")
-Width = 20
-Height = 20
+Width = 50
+Height = 50

@@ -22,5 +22,5 @@ player = NodePath("../Player")
 transform = Transform3D(1, 0, 0, 0, 0.7095584, 0.7046466, 0, -0.7046466, 0.7095584, 0, 51.351753, 0)
 
 [node name="Field" parent="." unique_id=32322520 instance=ExtResource("4_kry3j")]
-Width = 10
-Height = 10
+Width = 50
+Height = 50
