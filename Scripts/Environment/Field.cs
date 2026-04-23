@@ -1,3 +1,4 @@
+using FarmGame.Scripts.Fences;
 using FarmGame.Scripts.Tiles;
 using Godot;
 using System.Collections.Generic;
@@ -12,6 +13,7 @@ namespace FarmGame.Scripts.Environment
 		[Export] public FieldType FieldType = FieldType.Grass;
 
 		private readonly Dictionary<Vector2I, Tile> tiles = [];
+		private readonly Dictionary<Vector2I, Fence> fences = [];
 		private FieldRenderer fieldRenderer;
 
 		public override void _Ready()
@@ -36,6 +38,10 @@ namespace FarmGame.Scripts.Environment
 
 			CreateEdgeTiles();
 			RenderTiles();
+
+			// First render all fences, then connect them. This ensures that all fences exist before we try to connect them.
+			RenderFences();
+			ConnectFences();
 		}
 
 		private void CreateUniformField(TileType tileType)
@@ -112,6 +118,7 @@ namespace FarmGame.Scripts.Environment
 
 		private void AddEdgeTile(Vector2I pos)
 		{
+			// Add the tile itself
 			Tile tile = TileFactory.CreateTile(TileType.Edge);
 			tile.GridPosition = pos;
 			AddTile(pos, tile);
@@ -124,7 +131,7 @@ namespace FarmGame.Scripts.Environment
 		{
 			if (tiles.ContainsKey(gridPos))
 				RemoveTile(gridPos);
-			
+
 			tile.GridPosition = gridPos;
 			tiles[gridPos] = tile;
 			tile.Field = this;
@@ -196,5 +203,39 @@ namespace FarmGame.Scripts.Environment
 		}
 
 		private void RenderTiles() => fieldRenderer?.RenderTiles(tiles.Values, TileSize);
+
+		private void RenderFences()
+		{
+			foreach (Tile tile in tiles.Values)
+			{
+				if (tile.TileType != TileType.Edge)
+					continue;
+
+				Fence fence = Fence.GetSceneInstance();
+				fence.Initialize(GridToWorldPosition(tile.GridPosition));
+				AddChild(fence);
+				fences[tile.GridPosition] = fence;
+			}
+		}
+
+		private void ConnectFences()
+		{
+			// Each fence is responsible for connecting itself to the fence to the north and east of it.
+			foreach (var kvp in fences)
+			{
+				Vector2I pos = kvp.Key;
+				Fence fence = kvp.Value;
+
+				// Connect to north fence
+				Vector2I northPos = new(pos.X, pos.Y + 1);
+				if (fences.TryGetValue(northPos, out Fence northFence))
+					fence.ConnectToFence(northFence);
+
+				// Connect to east fence
+				Vector2I eastPos = new(pos.X + 1, pos.Y);
+				if (fences.TryGetValue(eastPos, out Fence eastFence))
+					fence.ConnectToFence(eastFence);
+			}
+		}
 	}
 }
