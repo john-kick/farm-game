@@ -9,7 +9,7 @@
 script = ExtResource("1_bo1nx")
 
 [node name="Player" parent="." unique_id=173540491 instance=ExtResource("2_bo1nx")]
-transform = Transform3D(-0.7071069, 0, -0.707107, 0, 1, 0, 0.707107, 0, -0.7071069, 0, 2, 0)
+transform = Transform3D(-0.7071069, 0, -0.707107, 0, 1, 0, 0.707107, 0, -0.7071069, 3.0235405, 2, 3.310184)
 Speed = 8.0
 FastMultiplier = 1.5
 JumpStrength = 5.0
@@ -22,5 +22,3 @@ player = NodePath("../Player")
 transform = Transform3D(1, 0, 0, 0, 0.7095584, 0.7046466, 0, -0.7046466, 0.7095584, 0, 51.351753, 0)
 
 [node name="Field" parent="." unique_id=32322520 instance=ExtResource("4_kry3j")]
-Width = 50
-Height = 50

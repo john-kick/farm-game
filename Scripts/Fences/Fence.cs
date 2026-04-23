@@ -28,6 +28,9 @@ namespace FarmGame.Scripts.Fences
 			// Place the board halfway to the other fence along the direction.
 			board.Position = direction * (Position.DistanceTo(other.Position) / 2);
 
+			// Scale the board to the distance between the two fences. The board is 1 unit long, so we can just scale it by the distance.
+			board.Scale = new Vector3(Position.DistanceTo(other.Position), 1, 1);
+
 			AddChild(board);
 
 			// Rotate the board to face the other fence, then rotate it 90 degrees to be perpendicular to the direction.
