@@ -40,6 +40,7 @@ public class Field
     /// <summary>
     /// Returns the surrounding (up to 8) neighbors of the tile at the given position
     /// </summary>
+    /// <exception cref="MissingTileException"></exception>
     public IEnumerable<Tile> GetNeighbors(Vector2I position)
     {
         List<Tile> neighbors = [];
@@ -57,7 +58,7 @@ public class Field
                 {
                     neighbors.Add(GetTile(position + offset));
                 }
-                catch (OutOfFieldBoundsException)
+                catch (OutOfChunkBoundsException)
                 {
                     // Don't include oob position
                 }
@@ -77,5 +78,5 @@ public class Field
     }
 
     private Vector2I GetChunkCoordinate(Vector2I tilePos) => new(tilePos.X / CHUNK_SIZE, tilePos.Y / CHUNK_SIZE);
-    private Vector2I ToLocalChunkPosition(Vector2I tilePos) => new(tilePos.X % CHUNK_SIZE, tilePos.X % CHUNK_SIZE);
+    private Vector2I ToLocalChunkPosition(Vector2I tilePos) => new(tilePos.X % CHUNK_SIZE, tilePos.Y % CHUNK_SIZE);
 }
