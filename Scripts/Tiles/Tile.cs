@@ -1,10 +1,9 @@
 using FarmGame.Scripts.Controls.Interactions;
-using FarmGame.Scripts.Environment;
 using Godot;
 
 namespace FarmGame.Scripts.Tiles
 {
-	public abstract partial class Tile(Field field = null) : Node3D, IInteractable
+	public abstract partial class Tile() : Node3D, IInteractable
 	{
 		/// <summary>
 		/// The type of this tile
@@ -22,16 +21,11 @@ namespace FarmGame.Scripts.Tiles
 		public abstract Material Material { get; }
 
 		/// <summary>
-		/// Reference to the Field this tile is on, if any
-		/// </summary>
-		public Field Field = field;
-
-		/// <summary>
 		/// Grid position of this tile
 		/// </summary>
 		[Export] public Vector2I GridPosition { get; set; }
 
-        public ArrayMesh CreateMesh(float TileSize)
+		public ArrayMesh CreateMesh(float TileSize)
 		{
 			float halfSize = TileSize / 2f;
 			SurfaceTool surfaceTool = new();
@@ -81,7 +75,7 @@ namespace FarmGame.Scripts.Tiles
 
 		protected ReplaceTileInteraction CreateReplaceTileInteraction(TileType newTileType)
 		{
-			return new ReplaceTileInteraction(newTileType, Field, GridPosition);
+			return new ReplaceTileInteraction(newTileType, GridPosition);
 		}
 
 		public virtual Interaction PrimaryInteraction() => new NoInteraction();

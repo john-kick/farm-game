@@ -1,9 +1,8 @@
-using FarmGame.Scripts.Environment;
 using Godot;
 
 namespace FarmGame.Scripts.Tiles
 {
-	public partial class StoneTile(Field field = null) : Tile(field)
+	public partial class StoneTile : Tile
 	{
 		[Export] public Color StoneColor = new(0.5f, 0.5f, 0.5f);
 

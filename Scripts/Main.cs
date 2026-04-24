@@ -1,8 +1,5 @@
 using Godot;
 using FarmGame.Scripts.UI;
-using FarmGame.Scripts.Tiles;
-using Godot.Collections;
-using FarmGame.Scripts.Environment;
 
 namespace FarmGame.Scripts
 {
@@ -12,7 +9,6 @@ namespace FarmGame.Scripts
 		[Export] public bool ShowHitIndicator = false;
 
 		private Camera3D camera;
-		private Field field;
 		private Debug debugPanel;
 		private TileIndicator tileIndicator;
 		private MeshInstance3D hitIndicator;
@@ -21,12 +17,11 @@ namespace FarmGame.Scripts
 		{
 			Engine.MaxFps = 0;
 			camera = GetNode<Camera3D>("Player/Camera");
-			field = GetNode<Field>("Field");
 			debugPanel = (Debug)GetNode<CanvasLayer>("DebugUI");
 
 			tileIndicator = new TileIndicator
 			{
-				Mesh = new PlaneMesh() { Size = new Vector2(field.TileSize, field.TileSize) },
+				Mesh = new PlaneMesh() { Size = Vector2.One },
 				MaterialOverride = new ShaderMaterial() { Shader = GD.Load<Shader>("res://Shaders/tile_indicator.gdshader") }
 			};
 			AddChild(tileIndicator);
@@ -64,44 +59,44 @@ namespace FarmGame.Scripts
 
 		private void LookingAt()
 		{
-			if (camera == null || field == null)
-			{
-				tileIndicator.Hide();
-				return;
-			}
+			// if (camera == null || field == null)
+			// {
+			tileIndicator.Hide();
+			return;
+			// }
 
-			PhysicsDirectSpaceState3D spaceState = GetWorld3D().DirectSpaceState;
-			Vector2 center = GetViewport().GetVisibleRect().Size / 2;
-			Vector3 from = camera.ProjectRayOrigin(center);
-			Vector3 dir = camera.ProjectRayNormal(center);
-			Vector3 to = from + dir * LookingAtDistance;
+			// PhysicsDirectSpaceState3D spaceState = GetWorld3D().DirectSpaceState;
+			// Vector2 center = GetViewport().GetVisibleRect().Size / 2;
+			// Vector3 from = camera.ProjectRayOrigin(center);
+			// Vector3 dir = camera.ProjectRayNormal(center);
+			// Vector3 to = from + dir * LookingAtDistance;
 
-			var query = PhysicsRayQueryParameters3D.Create(from, to);
-			query.CollideWithAreas = false;
-			query.CollideWithBodies = true;
+			// var query = PhysicsRayQueryParameters3D.Create(from, to);
+			// query.CollideWithAreas = false;
+			// query.CollideWithBodies = true;
 
-			Dictionary hit = spaceState.IntersectRay(query);
-			if (hit.Count == 0 || !hit.TryGetValue("position", out Variant hitPositionVariant))
-			{
-				tileIndicator.Hide();
-				hitIndicator?.Hide();
-				return;
-			}
+			// Dictionary hit = spaceState.IntersectRay(query);
+			// if (hit.Count == 0 || !hit.TryGetValue("position", out Variant hitPositionVariant))
+			// {
+			// 	tileIndicator.Hide();
+			// 	hitIndicator?.Hide();
+			// 	return;
+			// }
 
-			tileIndicator.Show();
-			hitIndicator?.Show();
+			// tileIndicator.Show();
+			// hitIndicator?.Show();
 
-			Vector3 hitPosition = hitPositionVariant.AsVector3();
-			if (hitIndicator != null)
-				hitIndicator.Position = hitPosition;
+			// Vector3 hitPosition = hitPositionVariant.AsVector3();
+			// if (hitIndicator != null)
+			// 	hitIndicator.Position = hitPosition;
 
-			Vector3 localHitPosition = field.ToLocal(hitPosition);
-			Vector2I gridPosition = field.WorldToGridPosition(localHitPosition);
-			Tile hoveredTile = field.GetTile(gridPosition);
-			float tileTop = hoveredTile != null ? hoveredTile.Height : 0f;
-			Vector3 TileIndicatorPosition = field.ToGlobal(field.GridToWorldPosition(gridPosition) + new Vector3(0, tileTop + 0.1f, 0));
-			tileIndicator.SetTargetPosition(TileIndicatorPosition);
-			debugPanel.LookingAt(hoveredTile);
+			// Vector3 localHitPosition = field.ToLocal(hitPosition);
+			// Vector2I gridPosition = field.WorldToGridPosition(localHitPosition);
+			// Tile hoveredTile = field.GetTile(gridPosition);
+			// float tileTop = hoveredTile != null ? hoveredTile.Height : 0f;
+			// Vector3 TileIndicatorPosition = field.ToGlobal(field.GridToWorldPosition(gridPosition) + new Vector3(0, tileTop + 0.1f, 0));
+			// tileIndicator.SetTargetPosition(TileIndicatorPosition);
+			// debugPanel.LookingAt(hoveredTile);
 		}
 	}
 }

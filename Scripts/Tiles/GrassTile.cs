@@ -1,10 +1,9 @@
 using FarmGame.Scripts.Controls.Interactions;
-using FarmGame.Scripts.Environment;
 using Godot;
 
 namespace FarmGame.Scripts.Tiles
 {
-	public partial class GrassTile(Field field = null) : Tile(field)
+	public partial class GrassTile : Tile
 	{
 		[Export] public Color GrassColor = new(0.2f, 0.8f, 0.2f);
 
@@ -12,7 +11,7 @@ namespace FarmGame.Scripts.Tiles
 		public override float Height => 0.95f;
 		public override Material Material => new StandardMaterial3D() { AlbedoColor = GrassColor };
 
-        public override ReplaceTileInteraction PrimaryInteraction()
+		public override ReplaceTileInteraction PrimaryInteraction()
 		{
 			return CreateReplaceTileInteraction(TileType.Dirt);
 		}

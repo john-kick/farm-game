@@ -1,6 +1,5 @@
 using Godot;
 using Godot.Collections;
-using FarmGame.Scripts.Environment;
 using FarmGame.Scripts.Controls.Interactions;
 using FarmGame.Scripts.Tiles;
 
@@ -19,13 +18,11 @@ namespace FarmGame.Scripts.Controls
 		private float jumpLastPressed = 0.0f;
 		private Vector3 targetVelocity;
 		private Camera3D camera;
-		private Field field;
 
 		public override void _Ready()
 		{
 			Input.MouseMode = Input.MouseModeEnum.Captured;
 			camera = GetNode<Camera3D>("Camera");
-			field = GetNodeOrNull<Field>("../Field");
 		}
 
 		public override void _Input(InputEvent @event)
@@ -158,11 +155,11 @@ namespace FarmGame.Scripts.Controls
 
 			if (interaction is ReplaceTileInteraction replaceTileInteraction)
 			{
-				Vector3 localHitPosition = field.ToLocal(hitPosition);
-				Vector2I gridPosition = field.WorldToGridPosition(localHitPosition);
-				Tile newTile = TileFactory.CreateTile(replaceTileInteraction.NewTileType);
-				field.AddTile(gridPosition, newTile);
-				field.Refresh();
+				// Vector3 localHitPosition = field.ToLocal(hitPosition);
+				// Vector2I gridPosition = field.WorldToGridPosition(localHitPosition);
+				// Tile newTile = TileFactory.CreateTile(replaceTileInteraction.NewTileType);
+				// field.AddTile(gridPosition, newTile);
+				// field.Refresh();
 			}
 		}
 
@@ -172,12 +169,14 @@ namespace FarmGame.Scripts.Controls
 			if (interactable != null)
 				return interactable;
 
-			if (field == null || !IsFieldCollision(hitNode))
-				return null;
+			return null;
 
-			Vector3 localHitPosition = field.ToLocal(hitPosition);
-			Vector2I gridPosition = field.WorldToGridPosition(localHitPosition);
-			return field.GetTile(gridPosition);
+			// if (field == null || !IsFieldCollision(hitNode))
+			// 	return null;
+
+			// Vector3 localHitPosition = field.ToLocal(hitPosition);
+			// Vector2I gridPosition = field.WorldToGridPosition(localHitPosition);
+			// return field.GetTile(gridPosition);
 		}
 
 		private static IInteractable FindInteractableInHierarchy(Node node)
@@ -193,7 +192,8 @@ namespace FarmGame.Scripts.Controls
 
 		private bool IsFieldCollision(Node node)
 		{
-			return field != null && (node == field || field.IsAncestorOf(node));
+			return false;
+			// return field != null && (node == field || field.IsAncestorOf(node));
 		}
 	}
 }
