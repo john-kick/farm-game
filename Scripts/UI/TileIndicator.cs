@@ -1,4 +1,3 @@
-using FarmGame.Scripts.Tiles;
 using Godot;
 
 namespace FarmGame.Scripts.UI

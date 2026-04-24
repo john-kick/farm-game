@@ -1,7 +1,6 @@
 using Godot;
 using Godot.Collections;
 using FarmGame.Scripts.Controls.Interactions;
-using FarmGame.Scripts.Tiles;
 
 namespace FarmGame.Scripts.Controls
 {

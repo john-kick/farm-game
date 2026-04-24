@@ -1,5 +1,3 @@
-using FarmGame.Scripts.Environment;
-
 namespace FarmGame.Scripts.Tiles
 {
 	public static class TileFactory
