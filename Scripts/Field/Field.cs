@@ -45,35 +45,12 @@ public class Field
     {
         byte mask = 0;
 
-        // N, NE, E, SE, S, SW, W, NW
-        Vector2I[] directions = [
-            new(0, -1),  // North
-            new(1, -1),  // North-East
-            new(1, 0),   // East
-            new(1, 1),   // South-East
-            new(0, 1),   // South
-            new(-1, 1),  // South-West
-            new(-1, 0),  // West
-            new(-1, -1)  // North-West
-        ];
-
-        byte[] bitFlags = [
-            NeighborMask.North,
-            NeighborMask.NorthEast,
-            NeighborMask.East,
-            NeighborMask.SouthEast,
-            NeighborMask.South,
-            NeighborMask.SouthWest,
-            NeighborMask.West,
-            NeighborMask.NorthWest
-        ];
-
-        for (int i = 0; i < directions.Length; i++)
+        for (int i = 0; i < NeighborMask.directions.Length; i++)
         {
             try
             {
-                GetTile(position + directions[i]);
-                mask |= bitFlags[i];
+                GetTile(position + NeighborMask.directions[i]);
+                mask |= NeighborMask.bitFlags[i];
             }
             catch (OutOfChunkBoundsException)
             {
