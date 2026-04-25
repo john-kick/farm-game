@@ -7,10 +7,27 @@ namespace FarmGame.Scripts.Field.Chunks;
 /// <summary>
 /// A chunk represents a a section of a field. Each chunk contains 16x16 Tiles.
 /// </summary>
-public class Chunk(Vector2I chunkPosition)
+public class Chunk
 {
-    private Vector2I _chunkPosition = chunkPosition;
     private readonly Dictionary<Vector2I, Tile> tiles = [];
+
+    public void Fill(TileType? type)
+    {
+        for (int z = 0; z < Field.CHUNK_SIZE; z++)
+        {
+            for (int x = 0; x < Field.CHUNK_SIZE; x++)
+            {
+                if (type is TileType t)
+                {
+                    SetTile(new Vector2I(x, z), TileFactory.CreateTile(t));
+                }
+                else
+                {
+                    SetTile(new Vector2I(x, z), TileFactory.CreateRandomTile());
+                }
+            }
+        }
+    }
 
     /// <summary>
     /// Return the tile at the given position.

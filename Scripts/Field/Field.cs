@@ -11,8 +11,23 @@ namespace FarmGame.Scripts.Field;
 /// <param name="size">The amount of chunks in the X and Z direction</param>
 public class Field
 {
-    private readonly int CHUNK_SIZE = 16;
+    public static readonly int CHUNK_SIZE = 16;
     private readonly ChunkRegistry chunkRegistry = new();
+
+    public void GenerateField(int chunksX, int chunksZ, TileType? type)
+    {
+        chunkRegistry.Clear();
+
+        for (int z = 0; z < chunksZ; z++)
+        {
+            for (int x = 0; x < chunksX; x++)
+            {
+                Vector2I position = new(x, z);
+                Chunk chunk = chunkRegistry.CreateChunk(position);
+                chunk.Fill(type);
+            }
+        }
+    }
 
     /// <summary>
     /// Returns the tile located at the given position from the chunk
@@ -22,7 +37,7 @@ public class Field
     public Tile GetTile(Vector2I position)
     {
         Chunk chunk = GetChunkFromTilePosition(position);
-        Vector2I localPos = ToLocalChunkPosition(position);
+        Vector2I localPos = LocalTilePositionFromGlobalTilePosition(position);
         return chunk.GetTile(localPos);
     }
 
@@ -33,12 +48,12 @@ public class Field
     public void SetTile(Vector2I position, Tile tile)
     {
         Chunk chunk = GetChunkFromTilePosition(position);
-        Vector2I localPos = ToLocalChunkPosition(position);
+        Vector2I localPos = LocalTilePositionFromGlobalTilePosition(position);
         chunk.SetTile(localPos, tile);
     }
 
     /// <summary>
-    /// Returns a bitmask of which neighboring tiles exist (up to 8), excluding out-of-bounds tiles.
+    /// Returns a bitmask of which neighboring tiles exist, excluding out-of-bounds tiles.
     /// Each bit represents a direction: bit 0 = North, bit 1 = NE, ..., bit 7 = NW
     /// </summary>
     public byte GetNeighborsMask(Vector2I position)
@@ -97,10 +112,30 @@ public class Field
     /// </summary>
     private Chunk GetChunkFromTilePosition(Vector2I tilePos)
     {
-        Vector2I chunkCoord = GetChunkCoordinate(tilePos);
+        Vector2I chunkCoord = ChunkPositionFromGlobalTilePosition(tilePos);
         return chunkRegistry.GetChunk(chunkCoord);
     }
 
-    private Vector2I GetChunkCoordinate(Vector2I tilePos) => new(tilePos.X / CHUNK_SIZE, tilePos.Y / CHUNK_SIZE);
-    private Vector2I ToLocalChunkPosition(Vector2I tilePos) => new(tilePos.X % CHUNK_SIZE, tilePos.Y % CHUNK_SIZE);
+    /// <summary>
+    /// Calculates the chunk position from the given global tile position
+    /// </summary>
+    private static Vector2I ChunkPositionFromGlobalTilePosition(Vector2I globalTilePosition)
+        => new(globalTilePosition.X / CHUNK_SIZE, globalTilePosition.Y / CHUNK_SIZE);
+
+    /// <summary>
+    /// Calculates the tile position within a chunk from the given global tile position
+    /// </summary>
+    private static Vector2I LocalTilePositionFromGlobalTilePosition(Vector2I globalTilePosition)
+        => new(globalTilePosition.X % CHUNK_SIZE, globalTilePosition.Y % CHUNK_SIZE);
+
+    /// <summary>
+    /// Calculates the global tile position from the given chunk position and local tile position within that chunk
+    /// </summary>
+    private static Vector2I GlobalTilePositionFromChunkAndLocal(
+        Vector2I chunkPosition,
+        Vector2I localTilePosition)
+    => new(
+        chunkPosition.X * CHUNK_SIZE + localTilePosition.X,
+        chunkPosition.Y * CHUNK_SIZE + localTilePosition.Y
+    );
 }

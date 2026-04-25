@@ -9,7 +9,7 @@ namespace FarmGame.Scripts.Field.Chunks;
 /// </summary>
 public class ChunkRegistry
 {
-    private readonly Dictionary<Vector2I, Chunk> chunks = [];
+    private Dictionary<Vector2I, Chunk> chunks = [];
 
     /// <summary>
     /// Returns the chunk at the given position
@@ -23,12 +23,13 @@ public class ChunkRegistry
     }
 
     /// <summary>
-    /// Adds a new chunk at the given position
+    /// Adds a new chunk at the given position and returns it
     /// </summary>
-    public void CreateChunk(Vector2I position)
+    public Chunk CreateChunk(Vector2I position)
     {
-        Chunk chunk = new(position);
+        Chunk chunk = new();
         chunks[position] = chunk;
+        return chunk;
     }
 
     /// <summary>
@@ -40,4 +41,9 @@ public class ChunkRegistry
         if (!chunks.Remove(position))
             throw new Exception($"Could not unload chunk at {position}");
     }
+
+    /// <summary>
+    /// Removes all chunks
+    /// </summary>
+    public void Clear() => chunks = [];
 }
