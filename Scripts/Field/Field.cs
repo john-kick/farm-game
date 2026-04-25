@@ -38,30 +38,6 @@ public class Field
     }
 
     /// <summary>
-    /// Returns a bitmask of which neighboring tiles exist (up to 8), excluding out-of-bounds tiles.
-    /// Each bit represents a direction: bit 0 = North, bit 1 = NE, ..., bit 7 = NW
-    /// </summary>
-    public byte GetNeighborsMask(Vector2I position)
-    {
-        byte mask = 0;
-
-        for (int i = 0; i < NeighborMask.directions.Length; i++)
-        {
-            try
-            {
-                GetTile(position + NeighborMask.directions[i]);
-                mask |= NeighborMask.bitFlags[i];
-            }
-            catch (OutOfChunkBoundsException)
-            {
-                // Neighbor doesn't exist, skip
-            }
-        }
-
-        return mask;
-    }
-
-    /// <summary>
     /// Returns the surrounding (up to 8) neighbors of the tile at the given position
     /// </summary>
     /// <exception cref="MissingTileException"></exception>
