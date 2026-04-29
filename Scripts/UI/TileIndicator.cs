@@ -1,3 +1,4 @@
+using FarmGame.Scripts.Environment;
 using FarmGame.Scripts.Tiles;
 using Godot;
 
@@ -23,6 +24,12 @@ namespace FarmGame.Scripts.UI
         public void SetTargetPosition(Vector3 position)
         {
             targetPosition = position;
+        }
+
+        public void TargetTile(Tile tile)
+        {
+            float tileTop = tile != null ? tile.Height : 0f;
+            targetPosition = Field.GridToWorldPosition(tile.GridPosition) + new Vector3(0.5f, tileTop + 0.1f, 0.5f);
         }
     }
 }

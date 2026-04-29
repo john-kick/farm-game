@@ -4,9 +4,13 @@
 [ext_resource type="PackedScene" uid="uid://cggldt6wqglsw" path="res://Scenes/player.tscn" id="2_bo1nx"]
 [ext_resource type="PackedScene" uid="uid://dfjq66ecd4vuj" path="res://Scenes/debug_ui.tscn" id="4_jjvhh"]
 [ext_resource type="PackedScene" uid="uid://bpnuw51tqtwgn" path="res://Scenes/field.tscn" id="4_kry3j"]
+[ext_resource type="PackedScene" uid="uid://eink4dmanpga" path="res://Scenes/Grid.tscn" id="5_kry3j"]
 
 [node name="Main" type="Node3D" unique_id=1547825884]
 script = ExtResource("1_bo1nx")
+ShowHitIndicator = true
+ShowLogicGrid = true
+ShowRenderGrid = true
 
 [node name="Player" parent="." unique_id=173540491 instance=ExtResource("2_bo1nx")]
 transform = Transform3D(-0.7071069, 0, -0.707107, 0, 1, 0, 0.707107, 0, -0.7071069, 3.0235405, 2, 3.310184)
@@ -22,3 +26,5 @@ player = NodePath("../Player")
 transform = Transform3D(1, 0, 0, 0, 0.7095584, 0.7046466, 0, -0.7046466, 0.7095584, 0, 51.351753, 0)
 
 [node name="Field" parent="." unique_id=32322520 instance=ExtResource("4_kry3j")]
+
+[node name="LogicGrid" parent="Field" unique_id=2008238683 instance=ExtResource("5_kry3j")]

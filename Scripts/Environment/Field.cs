@@ -9,7 +9,7 @@ namespace FarmGame.Scripts.Environment
 	{
 		[Export] public int Width = 20;
 		[Export] public int Height = 20;
-		[Export] public float TileSize = 1.0f;
+		public const float TILE_SIZE = 1.0f;
 		[Export] public FieldType FieldType = FieldType.Grass;
 
 		private readonly Dictionary<Vector2I, Tile> tiles = [];
@@ -19,12 +19,11 @@ namespace FarmGame.Scripts.Environment
 		public override void _Ready()
 		{
 			fieldRenderer = new FieldRenderer(this);
-			InitializeField(TileSize);
+			InitializeField();
 		}
 
-		public void InitializeField(float TileSize)
+		public void InitializeField()
 		{
-			this.TileSize = TileSize;
 			ClearField();
 
 			if (FieldType == FieldType.Random)
@@ -162,19 +161,19 @@ namespace FarmGame.Scripts.Environment
 		/// <summary>
 		/// Convert grid coordinates to world position
 		/// </summary>
-		public Vector3 GridToWorldPosition(Vector2I gridPos)
+		public static Vector3 GridToWorldPosition(Vector2I gridPos)
 		{
-			return new Vector3(gridPos.X * TileSize, 0, gridPos.Y * TileSize);
+			return new Vector3(gridPos.X, 0, gridPos.Y);
 		}
 
 		/// <summary>
 		/// Convert world position to grid coordinates
 		/// </summary>
-		public Vector2I WorldToGridPosition(Vector3 worldPos)
+		public static Vector2I WorldToGridPosition(Vector3 worldPos)
 		{
 			return new Vector2I(
-				Mathf.RoundToInt(worldPos.X / TileSize),
-				Mathf.RoundToInt(worldPos.Z / TileSize)
+				Mathf.FloorToInt(worldPos.X),
+				Mathf.FloorToInt(worldPos.Z)
 			);
 		}
 
@@ -202,7 +201,7 @@ namespace FarmGame.Scripts.Environment
 			RenderTiles();
 		}
 
-		private void RenderTiles() => fieldRenderer?.RenderTiles(tiles.Values, TileSize);
+		private void RenderTiles() => fieldRenderer?.RenderTiles(tiles.Values, TILE_SIZE);
 
 		private void RenderFences()
 		{

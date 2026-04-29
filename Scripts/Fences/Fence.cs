@@ -6,7 +6,7 @@ namespace FarmGame.Scripts.Fences
 	{
 		public void Initialize(Vector3 _Position)
 		{
-			Position = _Position + Vector3.Up * 1.5f;
+			Position = _Position + Vector3.Up * 1.5f + new Vector3(0.5f, 0, 0.5f);
 		}
 
 		public static Fence GetSceneInstance()
@@ -21,7 +21,7 @@ namespace FarmGame.Scripts.Fences
 
 			// Load the fence board
 			Node3D board = GD.Load<PackedScene>("res://Scenes/fence/fenceboard.tscn").Instantiate<Node3D>();
-			
+
 			// Get the direction to the other fence
 			Vector3 direction = (other.Position - Position).Normalized();
 

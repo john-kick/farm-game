@@ -9,6 +9,7 @@ namespace FarmGame.Scripts.UI
 		[Export] public Node3D player;
 		private Label posLabel;
 		private Label fpsLabel;
+		private Label lookingAtTileLabel;
 		private Label lookingAtLabel;
 		private Label verticesLabel;
 
@@ -16,6 +17,7 @@ namespace FarmGame.Scripts.UI
 		{
 			fpsLabel = GetNode<Label>("Panel/VFlowContainer/FPS");
 			posLabel = GetNode<Label>("Panel/VFlowContainer/PlayerInfo/PlayerPosition");
+			lookingAtTileLabel = GetNode<Label>("Panel/VFlowContainer/EnvironmentInfo/LookingAtTile");
 			lookingAtLabel = GetNode<Label>("Panel/VFlowContainer/EnvironmentInfo/LookingAt");
 		}
 
@@ -26,9 +28,14 @@ namespace FarmGame.Scripts.UI
 			fpsLabel.Text = $"FPS {Engine.GetFramesPerSecond()}";
 		}
 
-		public void LookingAt(Tile tile)
+		public void LookingAtTile(Tile tile)
 		{
-			lookingAtLabel.Text = $"Tile: {tile.TileType} {tile.GridPosition}, height: {tile.Height}";
+			lookingAtTileLabel.Text = $"Tile: {tile.TileType} {tile.GridPosition}, height: {tile.Height}";
+		}
+
+		public void LookingAt(Vector3 position)
+		{
+			lookingAtLabel.Text = $"Looking at: {position}";
 		}
 	}
 }

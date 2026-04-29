@@ -31,21 +31,20 @@ namespace FarmGame.Scripts.Tiles
 		/// </summary>
 		[Export] public Vector2I GridPosition { get; set; }
 
-        public ArrayMesh CreateMesh(float TileSize)
+		public ArrayMesh CreateMesh(float TileSize)
 		{
-			float halfSize = TileSize / 2f;
 			SurfaceTool surfaceTool = new();
 			surfaceTool.Begin(Mesh.PrimitiveType.Triangles);
 			surfaceTool.SetMaterial(Material);
 
-			Vector3 bottomFrontLeft = new(-halfSize, 0, -halfSize);
-			Vector3 bottomFrontRight = new(halfSize, 0, -halfSize);
-			Vector3 bottomBackRight = new(halfSize, 0, halfSize);
-			Vector3 bottomBackLeft = new(-halfSize, 0, halfSize);
-			Vector3 topFrontLeft = new(-halfSize, Height, -halfSize);
-			Vector3 topFrontRight = new(halfSize, Height, -halfSize);
-			Vector3 topBackRight = new(halfSize, Height, halfSize);
-			Vector3 topBackLeft = new(-halfSize, Height, halfSize);
+			Vector3 bottomFrontLeft = new(0, 0, 0);
+			Vector3 bottomFrontRight = new(TileSize, 0, 0);
+			Vector3 bottomBackRight = new(TileSize, 0, TileSize);
+			Vector3 bottomBackLeft = new(0, 0, TileSize);
+			Vector3 topFrontLeft = new(0, Height, 0);
+			Vector3 topFrontRight = new(TileSize, Height, 0);
+			Vector3 topBackRight = new(TileSize, Height, TileSize);
+			Vector3 topBackLeft = new(0, Height, TileSize);
 
 			AddQuad(surfaceTool, topFrontLeft, topFrontRight, topBackRight, topBackLeft, Vector3.Up);
 			AddQuad(surfaceTool, bottomFrontLeft, bottomFrontRight, topFrontRight, topFrontLeft, Vector3.Forward);

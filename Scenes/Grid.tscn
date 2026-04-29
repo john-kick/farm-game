@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://eink4dmanpga"]
+
+[ext_resource type="Script" uid="uid://d0q7ppmcx02yh" path="res://Scripts/UI/Grid.cs" id="1_5bwvu"]
+
+[node name="Grid" type="Node3D" unique_id=2008238683]
+script = ExtResource("1_5bwvu")

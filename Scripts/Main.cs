@@ -10,6 +10,10 @@ namespace FarmGame.Scripts
 	{
 		[Export] public float LookingAtDistance = 5.0f;
 		[Export] public bool ShowHitIndicator = false;
+		[Export] public bool ShowLogicGrid = false;
+		[Export] public Color LogicGridColor = new(1, 0, 0);
+		[Export] public bool ShowRenderGrid = false;
+		[Export] public Color RenderGridColor = new(0, 0, 1);
 
 		private Camera3D camera;
 		private Field field;
@@ -26,7 +30,7 @@ namespace FarmGame.Scripts
 
 			tileIndicator = new TileIndicator
 			{
-				Mesh = new PlaneMesh() { Size = new Vector2(field.TileSize, field.TileSize) },
+				Mesh = new PlaneMesh() { Size = new Vector2(Field.TILE_SIZE, Field.TILE_SIZE) },
 				MaterialOverride = new ShaderMaterial() { Shader = GD.Load<Shader>("res://Shaders/tile_indicator.gdshader") }
 			};
 			AddChild(tileIndicator);
@@ -46,6 +50,14 @@ namespace FarmGame.Scripts
 				};
 				AddChild(hitIndicator);
 			}
+
+			Grid logicGrid = GetNode<Grid>("Field/LogicGrid");
+			logicGrid.GridColor = LogicGridColor;
+			logicGrid.Visible = ShowLogicGrid;
+
+			// Grid renderGrid = GetNode<Grid>("Field/RenderGrid");
+			// renderGrid.GridColor = RenderGridColor;
+			// renderGrid.Visible = ShowRenderGrid;
 		}
 
 		public override void _Process(double delta)
@@ -96,12 +108,13 @@ namespace FarmGame.Scripts
 				hitIndicator.Position = hitPosition;
 
 			Vector3 localHitPosition = field.ToLocal(hitPosition);
-			Vector2I gridPosition = field.WorldToGridPosition(localHitPosition);
+			Vector2I gridPosition = Field.WorldToGridPosition(localHitPosition);
 			Tile hoveredTile = field.GetTile(gridPosition);
-			float tileTop = hoveredTile != null ? hoveredTile.Height : 0f;
-			Vector3 TileIndicatorPosition = field.ToGlobal(field.GridToWorldPosition(gridPosition) + new Vector3(0, tileTop + 0.1f, 0));
-			tileIndicator.SetTargetPosition(TileIndicatorPosition);
-			debugPanel.LookingAt(hoveredTile);
+			tileIndicator.TargetTile(hoveredTile);
+
+			// tileIndicator.SetTargetPosition(TileIndicatorPosition);
+			debugPanel.LookingAtTile(hoveredTile);
+			debugPanel.LookingAt(tileIndicator.Position);
 		}
 	}
 }

@@ -13,8 +13,9 @@ offset_bottom = 295.0
 
 [node name="VFlowContainer" type="VFlowContainer" parent="Panel" unique_id=1975171443]
 layout_mode = 0
+offset_top = 1.0
 offset_right = 364.0
-offset_bottom = 275.0
+offset_bottom = 276.0
 
 [node name="FPS" type="Label" parent="Panel/VFlowContainer" unique_id=1764491433]
 layout_mode = 2
@@ -25,8 +26,11 @@ layout_mode = 2
 [node name="PlayerPosition" type="Label" parent="Panel/VFlowContainer/PlayerInfo" unique_id=1063295896]
 layout_mode = 2
 
-[node name="EnvironmentInfo" type="VFlowContainer" parent="Panel/VFlowContainer" unique_id=842688826]
+[node name="EnvironmentInfo" type="HFlowContainer" parent="Panel/VFlowContainer" unique_id=1994441929]
 layout_mode = 2
 
-[node name="LookingAt" type="Label" parent="Panel/VFlowContainer/EnvironmentInfo" unique_id=183149782]
+[node name="LookingAtTile" type="Label" parent="Panel/VFlowContainer/EnvironmentInfo" unique_id=183149782]
+layout_mode = 2
+
+[node name="LookingAt" type="Label" parent="Panel/VFlowContainer/EnvironmentInfo" unique_id=2066336035]
 layout_mode = 2
