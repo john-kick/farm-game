@@ -1,5 +1,3 @@
-using FarmGame.Scripts.Environment;
-
 namespace FarmGame.Scripts.Tiles
 {
 	public static class TileFactory
@@ -12,8 +10,7 @@ namespace FarmGame.Scripts.Tiles
 			return type switch
 			{
 				TileType.Grass => new GrassTile(),
-				TileType.Dirt => new DirtTile(),
-				TileType.Stone => new StoneTile(),
+				TileType.Soil => new SoilTile(),
 				TileType.Edge => new EdgeTile(),
 				_ => throw new System.Exception($"Unsupported tile type: {type}")
 			};

@@ -1,0 +1,15 @@
+[gd_scene format=3 uid="uid://dd053fdwb2pxp"]
+
+[ext_resource type="PackedScene" uid="uid://62ja0nvubyar" path="res://Blender/Exports/Concave.glb" id="1_sh4tw"]
+[ext_resource type="Shader" uid="uid://ccegbgtfybchu" path="res://Shaders/tile_shader.gdshader" id="2_87tuv"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_87tuv"]
+render_priority = 0
+shader = ExtResource("2_87tuv")
+shader_parameter/grass_color = Color(0.2, 0.8, 0.2, 1)
+shader_parameter/soil_color = Color(0.4, 0.25, 0.1, 1)
+
+[node name="Concave" unique_id=1709420834 instance=ExtResource("1_sh4tw")]
+
+[node name="Plane" parent="." index="0" unique_id=816081943]
+surface_material_override/0 = SubResource("ShaderMaterial_87tuv")

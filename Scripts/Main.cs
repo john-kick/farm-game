@@ -10,10 +10,8 @@ namespace FarmGame.Scripts
 	{
 		[Export] public float LookingAtDistance = 5.0f;
 		[Export] public bool ShowHitIndicator = false;
-		[Export] public bool ShowLogicGrid = false;
-		[Export] public Color LogicGridColor = new(1, 0, 0);
-		[Export] public bool ShowRenderGrid = false;
-		[Export] public Color RenderGridColor = new(0, 0, 1);
+		[Export] public bool ShowGrid = false;
+		[Export] public Color GridColor = new(1, 0, 0);
 
 		private Camera3D camera;
 		private Field field;
@@ -51,13 +49,9 @@ namespace FarmGame.Scripts
 				AddChild(hitIndicator);
 			}
 
-			Grid logicGrid = GetNode<Grid>("Field/LogicGrid");
-			logicGrid.GridColor = LogicGridColor;
-			logicGrid.Visible = ShowLogicGrid;
-
-			// Grid renderGrid = GetNode<Grid>("Field/RenderGrid");
-			// renderGrid.GridColor = RenderGridColor;
-			// renderGrid.Visible = ShowRenderGrid;
+			Grid grid = GetNode<Grid>("Field/Grid");
+			grid.GridColor = GridColor;
+			grid.Visible = ShowGrid;
 		}
 
 		public override void _Process(double delta)

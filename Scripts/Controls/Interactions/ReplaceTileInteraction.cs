@@ -12,9 +12,9 @@ namespace FarmGame.Scripts.Controls.Interactions
 
         public override void Process()
         {
-            Tile tile = TileFactory.CreateTile(NewTileType);   
+            Tile tile = TileFactory.CreateTile(NewTileType);
             Field.AddTile(GridPosition, tile);
-            Field.Refresh();
+            // Field.Refresh();
         }
     }
 }

@@ -1,0 +1,15 @@
+[gd_scene format=3 uid="uid://db3foxfnbrgtx"]
+
+[ext_resource type="PackedScene" uid="uid://bdumukit0vbvg" path="res://Blender/Exports/Empty.glb" id="1_scpsw"]
+[ext_resource type="Shader" uid="uid://ccegbgtfybchu" path="res://Shaders/tile_shader.gdshader" id="2_s3fw7"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_xj6gy"]
+render_priority = 0
+shader = ExtResource("2_s3fw7")
+shader_parameter/grass_color = Color(0.2, 0.8, 0.2, 1)
+shader_parameter/soil_color = Color(0.4, 0.25, 0.1, 1)
+
+[node name="Empty" unique_id=1437730174 instance=ExtResource("1_scpsw")]
+
+[node name="Plane" parent="." index="0" unique_id=170509988]
+surface_material_override/0 = SubResource("ShaderMaterial_xj6gy")

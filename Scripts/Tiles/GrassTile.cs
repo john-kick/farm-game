@@ -6,15 +6,12 @@ namespace FarmGame.Scripts.Tiles
 {
 	public partial class GrassTile(Field field = null) : Tile(field)
 	{
-		[Export] public Color GrassColor = new(0.2f, 0.8f, 0.2f);
-
 		public override TileType TileType => TileType.Grass;
-		public override float Height => 0.95f;
-		public override Material Material => new StandardMaterial3D() { AlbedoColor = GrassColor };
+		public override float Height => 0.1f;
 
-        public override ReplaceTileInteraction PrimaryInteraction()
+		public override ReplaceTileInteraction PrimaryInteraction()
 		{
-			return CreateReplaceTileInteraction(TileType.Dirt);
+			return CreateReplaceTileInteraction(TileType.Soil);
 		}
 	}
 }

@@ -1,0 +1,15 @@
+[gd_scene format=3 uid="uid://stptkcdb7j6g"]
+
+[ext_resource type="PackedScene" uid="uid://8sn5ayra57n5" path="res://Blender/Exports/Convex.glb" id="1_g0cwb"]
+[ext_resource type="Shader" uid="uid://ccegbgtfybchu" path="res://Shaders/tile_shader.gdshader" id="2_h4oj5"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_5ttbt"]
+render_priority = 0
+shader = ExtResource("2_h4oj5")
+shader_parameter/grass_color = Color(0.2, 0.8, 0.2, 1)
+shader_parameter/soil_color = Color(0.4, 0.25, 0.1, 1)
+
+[node name="Convex" unique_id=291293040 instance=ExtResource("1_g0cwb")]
+
+[node name="Plane" parent="." index="0" unique_id=1988320179]
+surface_material_override/0 = SubResource("ShaderMaterial_5ttbt")

@@ -13,6 +13,7 @@ namespace FarmGame.Scripts.Controls
 		[Export] public float JumpStrength = 10.0f;
 		[Export] public float MouseSensitivity = .15f;
 		[Export] public float Gravity = 0.3f;
+		[Export] public bool GravityActive = true;
 		[Export] public float DoubleTapTime = 0.2f;
 		[Export] public float MaxInteractDistance = 5.0f;
 
@@ -59,7 +60,9 @@ namespace FarmGame.Scripts.Controls
 		{
 			targetVelocity = Velocity;
 			ApplyMovementInput();
-			ApplyGravity(delta);
+			if (GravityActive)
+				ApplyGravity(delta);
+
 			Velocity = targetVelocity;
 			Move();
 		}
@@ -155,15 +158,6 @@ namespace FarmGame.Scripts.Controls
 			};
 
 			interaction.Process();
-
-			if (interaction is ReplaceTileInteraction replaceTileInteraction)
-			{
-				Vector3 localHitPosition = field.ToLocal(hitPosition);
-				Vector2I gridPosition = Field.WorldToGridPosition(localHitPosition);
-				Tile newTile = TileFactory.CreateTile(replaceTileInteraction.NewTileType);
-				field.AddTile(gridPosition, newTile);
-				field.Refresh();
-			}
 		}
 
 		private IInteractable ResolveInteractable(Node hitNode, Vector3 hitPosition)

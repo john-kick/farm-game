@@ -4,7 +4,6 @@ namespace FarmGame.Scripts.Environment
     {
         Random,
         Grass,
-        Stone,
-        Dirt
+        Soil
     }
 }

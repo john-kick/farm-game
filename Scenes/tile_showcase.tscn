@@ -1,0 +1,31 @@
+[gd_scene format=3 uid="uid://crnsrqfsf7djr"]
+
+[ext_resource type="PackedScene" uid="uid://db3foxfnbrgtx" path="res://Scenes/Tiles/empty.tscn" id="1_oswtl"]
+[ext_resource type="PackedScene" uid="uid://conaou8qi1tfc" path="res://Scenes/Tiles/half.tscn" id="2_8oycb"]
+[ext_resource type="PackedScene" uid="uid://stptkcdb7j6g" path="res://Scenes/Tiles/convex.tscn" id="3_a110j"]
+[ext_resource type="PackedScene" uid="uid://dd053fdwb2pxp" path="res://Scenes/Tiles/concave.tscn" id="4_aq085"]
+[ext_resource type="PackedScene" uid="uid://dt4ednqdilymh" path="res://Scenes/Tiles/bridge.tscn" id="5_1ldg5"]
+[ext_resource type="PackedScene" uid="uid://bk35hhr8om5vg" path="res://Scenes/Tiles/full.tscn" id="6_4co6s"]
+[ext_resource type="PackedScene" uid="uid://cggldt6wqglsw" path="res://Scenes/player.tscn" id="7_hnmrf"]
+
+[node name="TileShowcase" type="Node3D" unique_id=1036379358]
+
+[node name="Empty" parent="." unique_id=1437730174 instance=ExtResource("1_oswtl")]
+
+[node name="Half" parent="." unique_id=1275820111 instance=ExtResource("2_8oycb")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, 0)
+
+[node name="Convex" parent="." unique_id=291293040 instance=ExtResource("3_a110j")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0)
+
+[node name="Concave" parent="." unique_id=1709420834 instance=ExtResource("4_aq085")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0, 0)
+
+[node name="Bridge" parent="." unique_id=1863937269 instance=ExtResource("5_1ldg5")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0, 1)
+
+[node name="Full" parent="." unique_id=2056884971 instance=ExtResource("6_4co6s")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 0, -1)
+
+[node name="Player" parent="." unique_id=173540491 instance=ExtResource("7_hnmrf")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.9951825, 1.6796094, 0.99552083)

@@ -8,16 +8,14 @@
 
 [node name="Main" type="Node3D" unique_id=1547825884]
 script = ExtResource("1_bo1nx")
-ShowHitIndicator = true
-ShowLogicGrid = true
-ShowRenderGrid = true
 
 [node name="Player" parent="." unique_id=173540491 instance=ExtResource("2_bo1nx")]
-transform = Transform3D(-0.7071069, 0, -0.707107, 0, 1, 0, 0.707107, 0, -0.7071069, 3.0235405, 2, 3.310184)
+transform = Transform3D(-0.7071069, 0, -0.707107, 0, 1, 0, 0.707107, 0, -0.7071069, 1, 2, 1)
 Speed = 8.0
 FastMultiplier = 1.5
 JumpStrength = 5.0
 Gravity = 9.81
+GravityActive = false
 
 [node name="DebugUI" parent="." unique_id=1645079385 node_paths=PackedStringArray("player") instance=ExtResource("4_jjvhh")]
 player = NodePath("../Player")
@@ -26,5 +24,8 @@ player = NodePath("../Player")
 transform = Transform3D(1, 0, 0, 0, 0.7095584, 0.7046466, 0, -0.7046466, 0.7095584, 0, 51.351753, 0)
 
 [node name="Field" parent="." unique_id=32322520 instance=ExtResource("4_kry3j")]
+Width = 10
+Height = 10
+FieldType = 0
 
-[node name="LogicGrid" parent="Field" unique_id=2008238683 instance=ExtResource("5_kry3j")]
+[node name="Grid" parent="Field" unique_id=2008238683 instance=ExtResource("5_kry3j")]
