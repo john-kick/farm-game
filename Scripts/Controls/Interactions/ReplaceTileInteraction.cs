@@ -14,7 +14,6 @@ namespace FarmGame.Scripts.Controls.Interactions
         {
             Tile tile = TileFactory.CreateTile(NewTileType);
             Field.AddTile(GridPosition, tile);
-            // Field.Refresh();
         }
     }
 }

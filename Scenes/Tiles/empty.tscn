@@ -9,7 +9,15 @@ shader = ExtResource("2_s3fw7")
 shader_parameter/grass_color = Color(0.2, 0.8, 0.2, 1)
 shader_parameter/soil_color = Color(0.4, 0.25, 0.1, 1)
 
+[sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_scpsw"]
+data = PackedVector3Array(-0.5, 0, 0.5, 0.5, 0, -0.5, 0.5, 0, 0.5, -0.5, 0, 0.5, -0.5, 0, -0.5, 0.5, 0, -0.5)
+
 [node name="Empty" unique_id=1437730174 instance=ExtResource("1_scpsw")]
 
 [node name="Plane" parent="." index="0" unique_id=170509988]
 surface_material_override/0 = SubResource("ShaderMaterial_xj6gy")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="." index="1" unique_id=188049674]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D" index="0" unique_id=1645357409]
+shape = SubResource("ConcavePolygonShape3D_scpsw")

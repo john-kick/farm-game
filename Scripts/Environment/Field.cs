@@ -33,8 +33,8 @@ namespace FarmGame.Scripts.Environment
 			if (FieldType == FieldType.Soil)
 				CreateUniformField(TileType.Soil);
 
-			CreateEdgeTiles();
-			fieldRenderer.Render();
+			// CreateEdgeTiles();
+			fieldRenderer.Update();
 
 			// First render all fences, then connect them. This ensures that all fences exist before we try to connect them.
 			RenderFences();
@@ -57,17 +57,17 @@ namespace FarmGame.Scripts.Environment
 
 		public void CreateTestField()
 		{
-			AddTile(new Vector2I(0, 0), TileFactory.CreateTile(TileType.Grass));
+			AddTile(new Vector2I(0, 0), TileFactory.CreateTile(TileType.Grass), false);
 
-			AddTile(new Vector2I(3, 0), TileFactory.CreateTile(TileType.Grass));
-			AddTile(new Vector2I(3, 1), TileFactory.CreateTile(TileType.Grass));
-			AddTile(new Vector2I(3, 2), TileFactory.CreateTile(TileType.Grass));
-			AddTile(new Vector2I(2, 1), TileFactory.CreateTile(TileType.Grass));
-			AddTile(new Vector2I(4, 1), TileFactory.CreateTile(TileType.Grass));
+			AddTile(new Vector2I(3, 0), TileFactory.CreateTile(TileType.Grass), false);
+			AddTile(new Vector2I(3, 1), TileFactory.CreateTile(TileType.Grass), false);
+			AddTile(new Vector2I(3, 2), TileFactory.CreateTile(TileType.Grass), false);
+			AddTile(new Vector2I(2, 1), TileFactory.CreateTile(TileType.Grass), false);
+			AddTile(new Vector2I(4, 1), TileFactory.CreateTile(TileType.Grass), false);
 
-			AddTile(new Vector2I(6, 1), TileFactory.CreateTile(TileType.Grass));
-			AddTile(new Vector2I(7, 0), TileFactory.CreateTile(TileType.Grass));
-			AddTile(new Vector2I(8, 1), TileFactory.CreateTile(TileType.Grass));
+			AddTile(new Vector2I(6, 1), TileFactory.CreateTile(TileType.Grass), false);
+			AddTile(new Vector2I(7, 0), TileFactory.CreateTile(TileType.Grass), false);
+			AddTile(new Vector2I(8, 1), TileFactory.CreateTile(TileType.Grass), false);
 		}
 
 		private void CreateRandomField()
@@ -137,22 +137,27 @@ namespace FarmGame.Scripts.Environment
 		}
 
 		/// <summary>
-		/// Add a tile to the field at the specified grid position
+		/// Add a tile to the field at the specified grid position.
+		/// If a tile is already present at this position, it is replaced.
 		/// </summary>
-		public void AddTile(Vector2I gridPos, Tile tile)
+		public void AddTile(Vector2I gridPos, Tile tile, bool update = true)
 		{
 			if (tiles.ContainsKey(gridPos))
-				RemoveTile(gridPos);
+				// Update is handled later in the current function (if necessary)
+				RemoveTile(gridPos, false);
 
 			tile.GridPosition = gridPos;
 			tiles[gridPos] = tile;
 			tile.Field = this;
+
+			if (update)
+				fieldRenderer.UpdateSurroundingTiles(gridPos);
 		}
 
 		/// <summary>
 		/// Remove a tile from the field
 		/// </summary>
-		public void RemoveTile(Vector2I gridPos)
+		public void RemoveTile(Vector2I gridPos, bool update = true)
 		{
 			Tile tile = GetTile(gridPos);
 			if (tile == null)
@@ -160,6 +165,9 @@ namespace FarmGame.Scripts.Environment
 
 			tiles.Remove(gridPos);
 			tile.Field = null;
+
+			if (update)
+				fieldRenderer.UpdateSurroundingTiles(gridPos);
 		}
 
 		/// <summary>
